@@ -98,20 +98,26 @@ function renderInApp(
     ),
   );
 
+  const browserLabel = status.device.platform === "android" ? "Chrome" : "Safari";
   const actions = document.createElement("div");
   actions.className = "bht-actions";
-  if (status.device.platform === "android") {
-    actions.append(
-      createButton("標準ブラウザ（Chrome）で開く", {
-        onClick: () => controller.escapeInAppBrowser({}),
-      }),
-    );
-  } else {
-    const result = controller.escapeInAppBrowser({});
-    if (result.method === "manual") body.append(renderSteps(result.steps));
-  }
-  actions.append(createButton("閉じる", { variant: "ghost", onClick: modal.close }));
+  actions.append(
+    createButton(`${browserLabel}で開く`, {
+      onClick: () => controller.escapeInAppBrowser({}),
+    }),
+  );
   body.append(actions);
+
+  // ボタンで開けない環境向けのフォールバック手順（遷移はさせない）。
+  const result = controller.escapeInAppBrowser({ navigate: () => {} });
+  const steps = result.method === "manual" ? result.steps : result.fallbackSteps;
+  body.append(createNote("ボタンで開けないときは、次の操作をお試しください。"));
+  body.append(renderSteps(steps));
+
+  const closeRow = document.createElement("div");
+  closeRow.className = "bht-actions";
+  closeRow.append(createButton("閉じる", { variant: "ghost", onClick: modal.close }));
+  body.append(closeRow);
 }
 
 function renderFull(

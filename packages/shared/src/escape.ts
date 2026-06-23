@@ -19,10 +19,40 @@ function currentUrl(explicit?: string): string {
   return "";
 }
 
-function defaultNavigate(target: string): void {
+/** intent:// など、同一ウィンドウでのスキーム遷移（Android 向け）。 */
+function locationNavigate(target: string): void {
   if (typeof location !== "undefined") {
     location.href = target;
   }
+}
+
+/**
+ * x-safari-https:// など、iOS のアプリ内ブラウザから外部アプリを開く遷移。
+ * WebView では location 代入が無視されることがあるため、
+ * ユーザー操作中に <a target="_blank"> をクリックする方式を優先する。
+ */
+function anchorNavigate(target: string): void {
+  if (typeof document !== "undefined" && document.body) {
+    const a = document.createElement("a");
+    a.href = target;
+    a.target = "_blank";
+    a.rel = "noopener";
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    return;
+  }
+  locationNavigate(target);
+}
+
+/**
+ * iOS のアプリ内ブラウザから Safari を開くための x-safari-https:// URL を生成する。
+ * https://example.com → x-safari-https://example.com
+ * 参考: https://stackoverflow.com/a/77466893 （CC BY-SA 4.0）
+ */
+export function buildSafariSchemeUrl(url: string): string {
+  return "x-safari-" + url;
 }
 
 /**
@@ -111,18 +141,22 @@ function manualSteps(appId: InAppBrowserId | null, platform: DeviceInfo["platfor
  */
 export function escapeInAppBrowser(device: DeviceInfo, options: EscapeOptions = {}): EscapeResult {
   const url = currentUrl(options.url);
-  const navigate = options.navigate ?? defaultNavigate;
+  const steps = manualSteps(device.inApp.appId, device.platform);
+  const isApple = device.platform === "ios" || device.platform === "ipados";
 
   if (device.platform === "android" && url) {
     const target = buildAndroidIntentUrl(url, options.androidPackage);
-    navigate(target);
-    return { method: "redirect", ok: true, target };
+    (options.navigate ?? locationNavigate)(target);
+    return { method: "redirect", ok: true, target, fallbackSteps: steps };
   }
 
-  // iOS / iPadOS / その他: 手動案内
-  return {
-    method: "manual",
-    ok: false,
-    steps: manualSteps(device.inApp.appId, device.platform),
-  };
+  if (isApple && url) {
+    // x-safari-https:// で Safari を開く（best-effort）。失敗時は fallbackSteps を案内。
+    const target = buildSafariSchemeUrl(url);
+    (options.navigate ?? anchorNavigate)(target);
+    return { method: "redirect", ok: true, target, fallbackSteps: steps };
+  }
+
+  // URL 不明 / PC など: 手動案内のみ
+  return { method: "manual", ok: false, steps };
 }

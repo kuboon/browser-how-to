@@ -87,11 +87,10 @@ function firefoxAndroidInstructions(): InstructionSet {
 /** インアプリブラウザのため、標準ブラウザへの移動を案内する。 */
 function inAppInstructions(device: DeviceInfo): InstructionSet {
   const appName = device.inApp.appLabel ?? "アプリ内ブラウザ";
+  // navigate を no-op にして、遷移せず手順だけを取り出す。
   const result = escapeInAppBrowser(device, { navigate: () => {} });
   const steps: GuideStep[] =
-    result.method === "manual"
-      ? result.steps
-      : [{ text: "「標準ブラウザで開く」ボタンを押してください。", icon: "browser" }];
+    result.method === "manual" ? result.steps : result.fallbackSteps;
   return {
     title: `${appName}では追加できません`,
     steps,

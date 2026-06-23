@@ -52,9 +52,9 @@ export interface A2hsController {
    * インアプリブラウザから標準ブラウザへ脱出する。
    * Android は自動遷移、iOS は手動手順を返す。
    */
-  escapeInAppBrowser(options?: { url?: string; androidPackage?: string }): import(
-    "@browser-how-to/shared"
-  ).EscapeResult;
+  escapeInAppBrowser(
+    options?: import("@browser-how-to/shared").EscapeOptions,
+  ): import("@browser-how-to/shared").EscapeResult;
   /** 状態変化（インストール可能になった/インストール済みになった）を購読する。 */
   onChange(listener: (status: A2hsStatus) => void): () => void;
 }

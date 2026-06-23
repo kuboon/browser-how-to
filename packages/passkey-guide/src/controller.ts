@@ -2,6 +2,7 @@ import {
   detectDevice,
   escapeInAppBrowser,
   type DeviceInfo,
+  type EscapeOptions,
   type EscapeResult,
 } from "@browser-how-to/shared";
 import { detectPasskeyCapabilities } from "./detect.js";
@@ -38,7 +39,8 @@ export function createPasskeyGuide(
         device,
       };
     },
-    escapeInAppBrowser: (opts?): EscapeResult => escapeInAppBrowser(device, opts),
+    escapeInAppBrowser: (opts?: EscapeOptions): EscapeResult =>
+      escapeInAppBrowser(device, opts),
     explain: (topic: ExplainTopic) => explain(topic, device),
   };
 }

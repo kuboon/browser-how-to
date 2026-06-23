@@ -87,27 +87,7 @@ function renderBody(
   }
 
   if (status.support === "in-app-blocked") {
-    const appName = status.device.inApp.appLabel ?? "アプリ内ブラウザ";
-    body.append(
-      createParagraph(
-        `${appName}の中ではホーム画面に追加できません。標準ブラウザで開き直してください。`,
-      ),
-    );
-    const result = controller.escapeInAppBrowser({});
-    const actions = document.createElement("div");
-    actions.className = "bht-actions";
-
-    if (status.device.platform === "android") {
-      actions.append(
-        createButton("標準ブラウザ（Chrome）で開く", {
-          onClick: () => controller.escapeInAppBrowser({}),
-        }),
-      );
-    } else if (result.method === "manual") {
-      body.append(renderSteps(result.steps));
-    }
-    actions.append(createButton("閉じる", { variant: "ghost", onClick: modal.close }));
-    body.append(actions);
+    renderInAppEscape(modal, controller, status, "ホーム画面に追加するには");
     return;
   }
 
@@ -137,6 +117,44 @@ function renderBody(
 
   // manual / unsupported
   renderManual(modal, controller, options);
+}
+
+function renderInAppEscape(
+  modal: ModalHandle,
+  controller: A2hsController,
+  status: A2hsStatus,
+  _titleHint: string,
+): void {
+  const body = modal.body;
+  body.replaceChildren();
+  const appName = status.device.inApp.appLabel ?? "アプリ内ブラウザ";
+  const browserLabel = status.device.platform === "android" ? "Chrome" : "Safari";
+  modal.setTitle("標準ブラウザで開いてください");
+  body.append(
+    createParagraph(
+      `${appName}の中ではホーム画面に追加できません。下のボタンで標準ブラウザ（${browserLabel}）を開いてください。`,
+    ),
+  );
+
+  const actions = document.createElement("div");
+  actions.className = "bht-actions";
+  actions.append(
+    createButton(`${browserLabel}で開く`, {
+      onClick: () => controller.escapeInAppBrowser({}),
+    }),
+  );
+  body.append(actions);
+
+  // ボタンで開けない環境向けのフォールバック手順（遷移はさせない）。
+  const result = controller.escapeInAppBrowser({ navigate: () => {} });
+  const steps = result.method === "manual" ? result.steps : result.fallbackSteps;
+  body.append(createNote("ボタンで開けないときは、次の操作をお試しください。"));
+  body.append(renderSteps(steps));
+
+  const closeRow = document.createElement("div");
+  closeRow.className = "bht-actions";
+  closeRow.append(createButton("閉じる", { variant: "ghost", onClick: modal.close }));
+  body.append(closeRow);
 }
 
 function renderManual(

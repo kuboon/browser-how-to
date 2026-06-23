@@ -57,10 +57,15 @@ export interface DeviceInfo {
 
 /** 標準ブラウザへ脱出した結果。 */
 export type EscapeResult =
-  /** 標準ブラウザへの遷移（ナビゲーション）を実行した。 */
-  | { method: "redirect"; ok: true; target: string }
   /**
-   * プログラムからは脱出できないため、手順を案内する必要がある（主に iOS）。
+   * 標準ブラウザへの遷移（ナビゲーション）を試みた。
+   * - Android: intent:// で端末の既定ブラウザを開く（ほぼ確実）。
+   * - iOS/iPadOS: x-safari-https:// で Safari を開く（best-effort：環境により失敗しうる）。
+   * 失敗時のフォールバックとして手動手順 fallbackSteps を併せて返す。
+   */
+  | { method: "redirect"; ok: true; target: string; fallbackSteps: GuideStep[] }
+  /**
+   * プログラムからは脱出を試せないため、手順案内のみ（URL 不明・PC 等）。
    * steps に従って操作してもらう。
    */
   | { method: "manual"; ok: false; steps: GuideStep[] };

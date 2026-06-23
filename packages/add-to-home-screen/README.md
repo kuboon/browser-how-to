@@ -3,7 +3,7 @@
 「ホーム画面に追加（Add to Home Screen / A2HS）」をあらゆるサービスに導入するためのフロントエンド用ライブラリです。
 
 - 🔍 **判定**: ホーム画面に追加できる環境かを自動判定
-- 🚪 **誘導**: アプリ内ブラウザ（Messenger / Facebook / Instagram / LINE など）では標準ブラウザへ誘導（Android は自動遷移、iOS は手順を案内）
+- 🚪 **誘導**: アプリ内ブラウザ（Messenger / Facebook / Instagram / LINE など）では標準ブラウザへ誘導（Android は `intent://` で既定ブラウザを開き、iOS は `x-safari-https://` で Safari を開く。いずれも失敗時の手動手順つき）
 - 📝 **手順案内**: 追加できる場合も、iPhone / Android・ブラウザ・バージョン別に分かりやすい手順を表示
 - 🎨 **コア + 任意 UI**: 判定だけ使う／用意済みのモーダル UI を使う、どちらも可能
 
@@ -52,7 +52,7 @@ switch (status.support) {
     break;
   }
   case "in-app-blocked":
-    a2hs.escapeInAppBrowser(); // Android は自動遷移、iOS は { method: "manual", steps } を返す
+    a2hs.escapeInAppBrowser(); // Android=intent:// / iOS=x-safari-https:// で遷移を試み、fallbackSteps も返す
     break;
 }
 ```
