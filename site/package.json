@@ -1,0 +1,15 @@
+{
+  "name": "@browser-how-to/site",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@browser-how-to/add-to-home-screen": "workspace:*",
+    "@browser-how-to/passkey-guide": "workspace:*"
+  }
+}

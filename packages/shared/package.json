@@ -1,0 +1,21 @@
+{
+  "name": "@browser-how-to/shared",
+  "version": "0.1.0",
+  "private": true,
+  "description": "端末・ブラウザ・インアプリブラウザの検出と、標準ブラウザへの脱出ロジック（内部共有）",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./dom": {
+      "types": "./src/dom.ts",
+      "default": "./src/dom.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "@browser-how-to/passkey-guide",
+  "version": "0.1.0",
+  "description": "パスキー認証が使えるか判定し、使えなければ標準ブラウザへ誘導、使える場合はクロスデバイスやパスキーの仕組みをわかりやすく案内するフロントエンド用ライブラリ",
+  "type": "module",
+  "files": ["dist"],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./ui": {
+      "types": "./dist/ui/index.d.ts",
+      "import": "./dist/ui/index.js"
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "keywords": ["passkey", "webauthn", "パスキー", "cross-device", "in-app-browser"],
+  "license": "MIT",
+  "devDependencies": {
+    "@browser-how-to/shared": "workspace:*"
+  }
+}

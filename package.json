@@ -1,0 +1,24 @@
+{
+  "name": "browser-how-to",
+  "version": "0.0.0",
+  "private": true,
+  "description": "ホーム画面追加・パスキー認証をあらゆるサービスに導入するためのフロントエンド支援パッケージ群",
+  "type": "module",
+  "scripts": {
+    "build": "pnpm -r --filter \"./packages/*\" run build",
+    "typecheck": "pnpm -r --filter \"./packages/*\" run typecheck",
+    "test": "pnpm -r --filter \"./packages/*\" run test",
+    "dev:a2hs": "pnpm --filter @browser-how-to/add-to-home-screen run dev",
+    "dev:passkey": "pnpm --filter @browser-how-to/passkey-guide run dev"
+  },
+  "license": "MIT",
+  "packageManager": "pnpm@10.33.0",
+  "devDependencies": {
+    "@types/node": "^22.20.0",
+    "jsdom": "^25.0.1",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.0",
+    "vite-plugin-dts": "^4.4.0",
+    "vitest": "^2.1.8"
+  }
+}
