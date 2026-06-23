@@ -1,28 +1,22 @@
 # パッケージ公開ワークフロー（GitHub Packages + JSR、npm には公開しない）
-# 単一パッケージ @kuboon/browser-how-to を公開する。
+# 単一パッケージ @kuboon/browser-how-to を、main への push で公開する。
 #
-# 【テスト中の設定】
-#   いまは検証のため、この PR ブランチへの push と手動実行（workflow_dispatch）で動きます。
-#   動作確認できたら、下の "本番（main 用）トリガー例" に差し替えてマージしてください。
+# 動作:
+#   - main に push されると実行。packages/browser-how-to/package.json の version が
+#     まだ各レジストリに無いときだけ publish する（同じ version の再 push では skip。
+#     公開したいときは version を上げて main に入れる）。
+#   - 手動実行（workflow_dispatch）も可。
 #
-#   本番（main 用）トリガー例 ── リリースタグ（v*）で公開する想定:
-#     on:
-#       push:
-#         tags: ["v*"]
-#       workflow_dispatch:
-#
-# 【事前準備（初回のみ）】
+# 事前準備（初回のみ）:
 #   - GitHub Packages: 追加設定不要（GITHUB_TOKEN で公開）。
-#   - JSR: jsr.io で @kuboon スコープを作成し、パッケージ @kuboon/browser-how-to を作成して、
-#     GitHub リポジトリ kuboon/browser-how-to に「リンク」しておく（OIDC 公開用）。
-#
-# 【注意】同じ version は再公開できません。再テスト時は version を上げてください。
+#   - JSR: jsr.io でパッケージ @kuboon/browser-how-to を作成し、設定で GitHub リポジトリ
+#     kuboon/browser-how-to をリンクしておく（OIDC trusted publishing 用）。
 
 name: Publish packages
 
 on:
   push:
-    branches: [claude/add-to-home-passkey-package-7tpkq4]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -43,8 +37,21 @@ jobs:
           scope: "@kuboon"
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+      - name: Check if version is already published
+        id: check
+        run: |
+          VERSION=$(node -p "require('./packages/browser-how-to/package.json').version")
+          if npm view "@kuboon/browser-how-to@$VERSION" version >/dev/null 2>&1; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::@kuboon/browser-how-to@$VERSION は GitHub Packages に公開済みのため skip"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # private な site は対象外。public な @kuboon/browser-how-to のみ公開される。
-      - run: pnpm -r publish --no-git-checks
+      - if: steps.check.outputs.publish == 'true'
+        run: pnpm -r publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -63,6 +70,17 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      - name: Publish @kuboon/browser-how-to
+      - name: Check if version is already published
+        id: check
+        run: |
+          VERSION=$(node -p "require('./packages/browser-how-to/package.json').version")
+          if curl -fsSL "https://jsr.io/@kuboon/browser-how-to/meta.json" 2>/dev/null | grep -q "\"$VERSION\""; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::@kuboon/browser-how-to@$VERSION は JSR に公開済みのため skip"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.check.outputs.publish == 'true'
+        name: Publish @kuboon/browser-how-to
         run: npx -y jsr@latest publish
         working-directory: packages/browser-how-to
