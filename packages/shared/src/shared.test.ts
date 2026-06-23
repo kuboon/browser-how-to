@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { detectBrowser, detectOsVersion, detectPlatform } from "./device.js";
 import { detectInAppBrowser } from "./inAppBrowser.js";
-import { buildAndroidIntentUrl, escapeInAppBrowser } from "./escape.js";
+import { buildAndroidIntentUrl, buildSafariSchemeUrl, escapeInAppBrowser } from "./escape.js";
 import type { DeviceInfo } from "./types.js";
 
 const UA = {
@@ -100,12 +100,28 @@ describe("escape", () => {
     expect(navigated).toContain("intent://");
   });
 
-  it("returns manual steps on iOS", () => {
-    const res = escapeInAppBrowser(iosDevice, { url: "https://example.com/" });
-    expect(res.method).toBe("manual");
-    expect(res.ok).toBe(false);
-    if (res.method === "manual") {
-      expect(res.steps.length).toBeGreaterThan(0);
+  it("builds an x-safari-https URL", () => {
+    expect(buildSafariSchemeUrl("https://example.com/path?a=1")).toBe(
+      "x-safari-https://example.com/path?a=1",
+    );
+  });
+
+  it("attempts x-safari redirect on iOS, with fallback steps", () => {
+    let navigated = "";
+    const res = escapeInAppBrowser(iosDevice, {
+      url: "https://example.com/",
+      navigate: (t) => (navigated = t),
+    });
+    expect(res.method).toBe("redirect");
+    expect(navigated).toBe("x-safari-https://example.com/");
+    if (res.method === "redirect") {
+      expect(res.fallbackSteps.length).toBeGreaterThan(0);
     }
+  });
+
+  it("returns manual steps when URL is unknown (e.g. desktop)", () => {
+    const desktop: DeviceInfo = { ...iosDevice, platform: "desktop" };
+    const res = escapeInAppBrowser(desktop, { url: "" });
+    expect(res.method).toBe("manual");
   });
 });

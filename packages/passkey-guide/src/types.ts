@@ -52,9 +52,9 @@ export interface PasskeyGuideController {
   /** 端末情報のみを同期取得する（capability 検出は行わない）。 */
   getDevice(): DeviceInfo;
   /** インアプリブラウザから標準ブラウザへ脱出する。 */
-  escapeInAppBrowser(options?: { url?: string; androidPackage?: string }): import(
-    "@browser-how-to/shared"
-  ).EscapeResult;
+  escapeInAppBrowser(
+    options?: import("@browser-how-to/shared").EscapeOptions,
+  ): import("@browser-how-to/shared").EscapeResult;
   /** 指定トピックの案内コンテンツを取得する。 */
   explain(topic: ExplainTopic): PasskeyExplainer;
 }

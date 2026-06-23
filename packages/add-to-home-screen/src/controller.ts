@@ -2,6 +2,7 @@ import {
   detectDevice,
   escapeInAppBrowser,
   type DeviceInfo,
+  type EscapeOptions,
   type EscapeResult,
 } from "@browser-how-to/shared";
 import { buildInstructions } from "./instructions.js";
@@ -77,8 +78,7 @@ export function createA2hs(options: A2hsControllerOptions = {}): A2hsController 
     }
   };
 
-  const escape = (opts?: { url?: string; androidPackage?: string }): EscapeResult =>
-    escapeInAppBrowser(device, opts);
+  const escape = (opts?: EscapeOptions): EscapeResult => escapeInAppBrowser(device, opts);
 
   const onChange = (listener: (status: A2hsStatus) => void): (() => void) => {
     const wrapped = () => listener(getStatus());

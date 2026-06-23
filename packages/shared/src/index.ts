@@ -8,5 +8,5 @@ export {
   isStandardBrowser,
 } from "./device.js";
 export { detectInAppBrowser } from "./inAppBrowser.js";
-export { escapeInAppBrowser, buildAndroidIntentUrl } from "./escape.js";
+export { escapeInAppBrowser, buildAndroidIntentUrl, buildSafariSchemeUrl } from "./escape.js";
 export type { EscapeOptions } from "./escape.js";
