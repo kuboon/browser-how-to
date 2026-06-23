@@ -46,6 +46,23 @@ const status = createA2hs().getStatus();
 // status.support: "installed" | "native-prompt" | "manual" | "in-app-blocked" | "unsupported"
 ```
 
+### アプリ内ブラウザ判定だけを使う
+
+端末・ブラウザ・アプリ内ブラウザの判定は `detectDevice()` で行えます（両パッケージから同じものを import 可能）。
+
+```ts
+import { detectDevice } from "@browser-how-to/add-to-home-screen";
+
+const device = detectDevice();
+if (device.inApp.isInApp) {
+  device.inApp.appId;    // "messenger" | "facebook" | "instagram" | "line" | "twitter" | ...
+  device.inApp.appLabel; // "Facebook Messenger" など（表示用）
+  // → ホーム画面追加もパスキーも使えないので標準ブラウザへ誘導する
+}
+device.platform; // "ios" | "ipados" | "android" | "desktop" | "unknown"
+device.browser;  // "safari" | "chrome" | "samsung" | "firefox" | ...
+```
+
 詳細は各パッケージの README を参照してください。
 
 ## 開発
