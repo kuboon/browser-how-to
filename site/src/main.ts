@@ -1,4 +1,4 @@
-import { createA2hs } from "@browser-how-to/add-to-home-screen";
+import { createA2hs, detectDevice } from "@browser-how-to/add-to-home-screen";
 import { showA2hsGuide } from "@browser-how-to/add-to-home-screen/ui";
 import { createPasskeyGuide } from "@browser-how-to/passkey-guide";
 import { showPasskeyGuide } from "@browser-how-to/passkey-guide/ui";
@@ -66,6 +66,20 @@ function currentUa(): string | undefined {
   return PRESETS[select.selectedIndex]?.ua;
 }
 
+function refreshDetect(): void {
+  const ua = currentUa();
+  const d = detectDevice(ua);
+  const inApp = d.inApp.isInApp
+    ? `✅ アプリ内ブラウザ（${d.inApp.appLabel} / id: ${d.inApp.appId}）`
+    : "—（通常のブラウザ）";
+  $("#detect-output").innerHTML =
+    `<strong>device.inApp.isInApp:</strong> ${d.inApp.isInApp}<br />` +
+    `<span class="muted small">${inApp}<br />` +
+    `platform: ${d.platform} / browser: ${d.browser}` +
+    (d.osVersion ? ` / OS ${d.osVersion.major}.${d.osVersion.minor}` : "") +
+    `</span>`;
+}
+
 function refreshA2hs(): void {
   const ua = currentUa();
   const status = createA2hs({ userAgent: ua }).getStatus();
@@ -99,6 +113,7 @@ function init(): void {
   });
 
   select.addEventListener("change", () => {
+    refreshDetect();
     refreshA2hs();
     void refreshPasskey();
   });
@@ -110,6 +125,7 @@ function init(): void {
     showPasskeyGuide({ userAgent: currentUa() });
   });
 
+  refreshDetect();
   refreshA2hs();
   void refreshPasskey();
 }

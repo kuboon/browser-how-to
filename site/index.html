@@ -47,6 +47,32 @@
         <p class="muted small">現在のブラウザの実環境で試すには「実機（このブラウザ）」を選んでください。</p>
       </section>
 
+      <section class="card" id="detect">
+        <h2>アプリ内ブラウザ判定</h2>
+        <p>
+          <code>detectDevice()</code> で、端末・ブラウザ・アプリ内ブラウザをまとめて判定できます。
+          どちらのパッケージからも同じ関数を import できます。
+        </p>
+        <div class="status" id="detect-output">判定中…</div>
+        <pre class="code"><code>import { detectDevice } from "@browser-how-to/add-to-home-screen";
+// passkey-guide からでも同じものを import できます
+
+const device = detectDevice();
+
+if (device.inApp.isInApp) {
+  // 例: Messenger / Facebook / Instagram / LINE / X / WeChat ...
+  console.log(device.inApp.appId);    // "messenger" など
+  console.log(device.inApp.appLabel); // "Facebook Messenger" など（表示用）
+  // → ホーム画面追加もパスキーも使えないので、標準ブラウザへ誘導する
+}
+
+// その他に取れる情報
+device.platform;   // "ios" | "ipados" | "android" | "desktop" | "unknown"
+device.browser;    // "safari" | "chrome" | "samsung" | "firefox" | ...
+device.osVersion;  // { major, minor } | null
+device.isStandalone; // ホーム画面アプリとして起動中か</code></pre>
+      </section>
+
       <section class="card" id="a2hs">
         <h2>① add-to-home-screen</h2>
         <p>ホーム画面に追加できるか判定し、できなければ標準ブラウザへ誘導、できる場合は機種別の手順を案内します。</p>
