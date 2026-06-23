@@ -5,7 +5,7 @@ import {
   createModal,
   renderSteps,
   type ModalHandle,
-} from "@browser-how-to/shared/dom";
+} from "@kuboon/how-to-shared/dom";
 import { createA2hs } from "../controller.js";
 import type { A2hsController, A2hsStatus } from "../types.js";
 

@@ -29,13 +29,13 @@ importers:
 
   packages/add-to-home-screen:
     devDependencies:
-      '@browser-how-to/shared':
+      '@kuboon/how-to-shared':
         specifier: workspace:*
         version: link:../shared
 
   packages/passkey-guide:
     devDependencies:
-      '@browser-how-to/shared':
+      '@kuboon/how-to-shared':
         specifier: workspace:*
         version: link:../shared
 
@@ -43,10 +43,10 @@ importers:
 
   site:
     dependencies:
-      '@browser-how-to/add-to-home-screen':
+      '@kuboon/how-to-a2hs':
         specifier: workspace:*
         version: link:../packages/add-to-home-screen
-      '@browser-how-to/passkey-guide':
+      '@kuboon/how-to-passkeys':
         specifier: workspace:*
         version: link:../packages/passkey-guide
 

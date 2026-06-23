@@ -54,7 +54,7 @@
           どちらのパッケージからも同じ関数を import できます。
         </p>
         <div class="status" id="detect-output">判定中…</div>
-        <pre class="code"><code>import { detectDevice } from "@browser-how-to/add-to-home-screen";
+        <pre class="code"><code>import { detectDevice } from "@kuboon/how-to-a2hs";
 // passkey-guide からでも同じものを import できます
 
 const device = detectDevice();
@@ -80,7 +80,7 @@ device.isStandalone; // ホーム画面アプリとして起動中か</code></pr
         <div class="actions">
           <button class="btn" id="a2hs-show">案内を表示する</button>
         </div>
-        <pre class="code"><code>import { showA2hsGuide } from "@browser-how-to/add-to-home-screen/ui";
+        <pre class="code"><code>import { showA2hsGuide } from "@kuboon/how-to-a2hs/ui";
 
 document.querySelector("#install").addEventListener("click", () =&gt; {
   showA2hsGuide();
@@ -94,7 +94,7 @@ document.querySelector("#install").addEventListener("click", () =&gt; {
         <div class="actions">
           <button class="btn" id="passkey-show">案内を表示する</button>
         </div>
-        <pre class="code"><code>import { showPasskeyGuide } from "@browser-how-to/passkey-guide/ui";
+        <pre class="code"><code>import { showPasskeyGuide } from "@kuboon/how-to-passkeys/ui";
 
 document.querySelector("#passkey").addEventListener("click", () =&gt; {
   showPasskeyGuide();

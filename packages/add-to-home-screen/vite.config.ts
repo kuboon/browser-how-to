@@ -9,7 +9,7 @@ export default defineConfig({
       exclude: ["src/**/*.test.ts"],
       // private な共有パッケージの型を各 .d.ts にインライン化する。
       rollupTypes: true,
-      bundledPackages: ["@browser-how-to/shared"],
+      bundledPackages: ["@kuboon/how-to-shared"],
     }),
   ],
   build: {

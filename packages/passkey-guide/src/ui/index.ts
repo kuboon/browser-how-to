@@ -5,7 +5,7 @@ import {
   createParagraph,
   renderSteps,
   type ModalHandle,
-} from "@browser-how-to/shared/dom";
+} from "@kuboon/how-to-shared/dom";
 import { createPasskeyGuide } from "../controller.js";
 import type {
   ExplainTopic,

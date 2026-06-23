@@ -1,4 +1,4 @@
-# @browser-how-to/passkey-guide
+# @kuboon/how-to-passkeys
 
 パスキー（WebAuthn）認証をあらゆるサービスに導入するための、判定＆案内ライブラリです。
 **パスキーのログイン処理そのものではなく**、「使える環境か」の判定と、ユーザーが戸惑いがちな部分の案内に特化しています。
@@ -12,14 +12,30 @@
 
 ## インストール
 
+このパッケージは **JSR** と **GitHub Packages** で配布しています（npm レジストリには公開していません）。
+
+JSR（推奨）:
+
 ```bash
-npm i @browser-how-to/passkey-guide
+npx jsr add @kuboon/how-to-passkeys
+# Deno: deno add jsr:@kuboon/how-to-passkeys
+```
+
+GitHub Packages（npm 互換）— `@kuboon` スコープを GitHub Packages に向ける `.npmrc` を用意:
+
+```
+# .npmrc
+@kuboon:registry=https://npm.pkg.github.com
+```
+
+```bash
+npm i @kuboon/how-to-passkeys
 ```
 
 ## 使い方（UI つき・最短）
 
 ```ts
-import { showPasskeyGuide } from "@browser-how-to/passkey-guide/ui";
+import { showPasskeyGuide } from "@kuboon/how-to-passkeys/ui";
 
 document.querySelector("#about-passkey")!.addEventListener("click", () => {
   showPasskeyGuide();
@@ -36,7 +52,7 @@ document.querySelector("#about-passkey")!.addEventListener("click", () => {
 ## 使い方（コアのみ・ヘッドレス）
 
 ```ts
-import { createPasskeyGuide } from "@browser-how-to/passkey-guide";
+import { createPasskeyGuide } from "@kuboon/how-to-passkeys";
 
 const guide = createPasskeyGuide();
 const status = await guide.detect();

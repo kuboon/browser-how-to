@@ -15,4 +15,4 @@ export {
   type DeviceInfo,
   type GuideStep,
   type EscapeResult,
-} from "@browser-how-to/shared";
+} from "@kuboon/how-to-shared";

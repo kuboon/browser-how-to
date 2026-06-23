@@ -1,4 +1,4 @@
-# @browser-how-to/add-to-home-screen
+# @kuboon/how-to-a2hs
 
 「ホーム画面に追加（Add to Home Screen / A2HS）」をあらゆるサービスに導入するためのフロントエンド用ライブラリです。
 
@@ -9,14 +9,30 @@
 
 ## インストール
 
+このパッケージは **JSR** と **GitHub Packages** で配布しています（npm レジストリには公開していません）。
+
+JSR（推奨）:
+
 ```bash
-npm i @browser-how-to/add-to-home-screen
+npx jsr add @kuboon/how-to-a2hs
+# Deno: deno add jsr:@kuboon/how-to-a2hs
+```
+
+GitHub Packages（npm 互換）— `@kuboon` スコープを GitHub Packages に向ける `.npmrc` を用意:
+
+```
+# .npmrc
+@kuboon:registry=https://npm.pkg.github.com
+```
+
+```bash
+npm i @kuboon/how-to-a2hs
 ```
 
 ## 使い方（UI つき・最短）
 
 ```ts
-import { showA2hsGuide } from "@browser-how-to/add-to-home-screen/ui";
+import { showA2hsGuide } from "@kuboon/how-to-a2hs/ui";
 
 // ボタンが押されたら、環境に応じた案内モーダルを表示
 document.querySelector("#install")!.addEventListener("click", () => {
@@ -36,7 +52,7 @@ document.querySelector("#install")!.addEventListener("click", () => {
 UI を自前で作る場合は判定ロジックだけ使えます。
 
 ```ts
-import { createA2hs } from "@browser-how-to/add-to-home-screen";
+import { createA2hs } from "@kuboon/how-to-a2hs";
 
 const a2hs = createA2hs();
 const status = a2hs.getStatus();

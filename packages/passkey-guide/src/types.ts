@@ -1,4 +1,4 @@
-import type { DeviceInfo, GuideStep } from "@browser-how-to/shared";
+import type { DeviceInfo, GuideStep } from "@kuboon/how-to-shared";
 
 export interface PasskeyCapabilities {
   /** WebAuthn（パスキー）に対応しているか。 */
@@ -53,8 +53,8 @@ export interface PasskeyGuideController {
   getDevice(): DeviceInfo;
   /** インアプリブラウザから標準ブラウザへ脱出する。 */
   escapeInAppBrowser(
-    options?: import("@browser-how-to/shared").EscapeOptions,
-  ): import("@browser-how-to/shared").EscapeResult;
+    options?: import("@kuboon/how-to-shared").EscapeOptions,
+  ): import("@kuboon/how-to-shared").EscapeResult;
   /** 指定トピックの案内コンテンツを取得する。 */
   explain(topic: ExplainTopic): PasskeyExplainer;
 }

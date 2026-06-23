@@ -1,5 +1,5 @@
 {
-  "name": "@browser-how-to/shared",
+  "name": "@kuboon/how-to-shared",
   "version": "0.1.0",
   "private": true,
   "description": "端末・ブラウザ・インアプリブラウザの検出と、標準ブラウザへの脱出ロジック（内部共有）",

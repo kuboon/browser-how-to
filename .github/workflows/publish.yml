@@ -1,0 +1,72 @@
+# パッケージ公開ワークフロー（GitHub Packages + JSR、npm には公開しない）
+#
+# 【テスト中の設定】
+#   いまは検証のため、この PR ブランチへの push と手動実行（workflow_dispatch）で動きます。
+#   動作確認できたら、下の "本番（main 用）トリガー例" に差し替えてマージしてください。
+#
+#   本番（main 用）トリガー例 ── リリースタグ（v*）で公開する想定:
+#     on:
+#       push:
+#         tags: ["v*"]
+#       workflow_dispatch:
+#
+# 【事前準備（初回のみ）】
+#   - GitHub Packages: 追加設定不要（GITHUB_TOKEN で公開）。公開後は Packages タブに表示。
+#   - JSR: jsr.io で @kuboon スコープを作成し、各パッケージ
+#       （@kuboon/how-to-a2hs / @kuboon/how-to-passkeys）を作成して、
+#       GitHub リポジトリ kuboon/browser-how-to に「リンク」しておく。
+#       → これで id-token（OIDC）による trusted publishing が通ります。
+#
+# 【注意】同じ version は再公開できません。再テスト時は version を上げてください。
+
+name: Publish packages
+
+on:
+  push:
+    branches: [claude/add-to-home-passkey-package-7tpkq4]
+  workflow_dispatch:
+
+jobs:
+  github-packages:
+    name: Publish to GitHub Packages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: "@kuboon"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      # private な shared / site は対象外。public な2パッケージのみ公開される。
+      - run: pnpm -r publish --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  jsr:
+    name: Publish to JSR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # JSR の OIDC trusted publishing に必要
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Publish @kuboon/how-to-a2hs
+        run: npx -y jsr@latest publish
+        working-directory: packages/add-to-home-screen
+      - name: Publish @kuboon/how-to-passkeys
+        run: npx -y jsr@latest publish
+        working-directory: packages/passkey-guide

@@ -1,7 +1,7 @@
-import { createA2hs, detectDevice } from "@browser-how-to/add-to-home-screen";
-import { showA2hsGuide } from "@browser-how-to/add-to-home-screen/ui";
-import { createPasskeyGuide } from "@browser-how-to/passkey-guide";
-import { showPasskeyGuide } from "@browser-how-to/passkey-guide/ui";
+import { createA2hs, detectDevice } from "@kuboon/how-to-a2hs";
+import { showA2hsGuide } from "@kuboon/how-to-a2hs/ui";
+import { createPasskeyGuide } from "@kuboon/how-to-passkeys";
+import { showPasskeyGuide } from "@kuboon/how-to-passkeys/ui";
 
 interface Preset {
   label: string;

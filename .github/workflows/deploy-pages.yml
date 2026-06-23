@@ -34,7 +34,7 @@ jobs:
         run: pnpm build
 
       - name: Build demo site
-        run: pnpm --filter @browser-how-to/site build
+        run: pnpm --filter @kuboon/how-to-site build
         env:
           SITE_BASE: /${{ github.event.repository.name }}/
 
