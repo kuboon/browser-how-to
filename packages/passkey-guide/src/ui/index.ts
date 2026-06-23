@@ -126,6 +126,7 @@ function renderFull(
   _status: PasskeyStatus,
 ): void {
   const body = modal.body;
+  body.replaceChildren();
   modal.setTitle("パスキーでかんたん・安全にログイン");
   const intro = controller.explain("what-is-passkey");
   for (const p of intro.body) body.append(createParagraph(p));
