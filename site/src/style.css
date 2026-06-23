@@ -1,0 +1,81 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f4f6fb;
+  --card: #ffffff;
+  --text: #1a1a2e;
+  --muted: #6b7280;
+  --accent: #2563eb;
+  --border: #e6e8ef;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1115;
+    --card: #1a1d24;
+    --text: #f2f3f7;
+    --muted: #9aa0ac;
+    --border: #2a2e37;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans", "Noto Sans JP", Meiryo, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+.hero {
+  text-align: center;
+  padding: 56px 20px 24px;
+  background: linear-gradient(160deg, #2563eb, #7c3aed);
+  color: #fff;
+}
+.hero h1 { margin: 0 0 8px; font-size: 34px; letter-spacing: -0.02em; }
+.hero .lead { margin: 0; opacity: 0.95; }
+.hero .links { margin-top: 16px; }
+.hero .links a {
+  color: #fff; text-decoration: none; border: 1px solid rgba(255, 255, 255, 0.6);
+  padding: 8px 18px; border-radius: 999px; font-weight: 600;
+}
+main { max-width: 760px; margin: -16px auto 0; padding: 0 16px 40px; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px 24px;
+  margin: 16px 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+.card h2 { margin: 0 0 12px; font-size: 20px; }
+.card p { margin: 0 0 12px; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.field { display: flex; flex-direction: column; gap: 6px; margin: 8px 0; font-weight: 600; }
+.field select {
+  font-size: 16px; padding: 12px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--bg); color: var(--text);
+}
+.status {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 12px 0;
+}
+.actions { margin: 12px 0; }
+.btn {
+  appearance: none; border: 0; border-radius: 12px; padding: 14px 22px;
+  font-size: 16px; font-weight: 700; cursor: pointer;
+  background: var(--accent); color: #fff;
+}
+.btn:hover { background: #1d4ed8; }
+.code {
+  background: #0d1117; color: #e6edf3; border-radius: 12px;
+  padding: 16px; overflow-x: auto; font-size: 13px; line-height: 1.6;
+  margin: 12px 0 0;
+}
+.code code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+footer { text-align: center; color: var(--muted); padding: 24px; font-size: 13px; }
+footer a { color: var(--accent); }

@@ -1,0 +1,29 @@
+{
+  "name": "@browser-how-to/add-to-home-screen",
+  "version": "0.1.0",
+  "description": "ホーム画面に追加できるか判定し、できなければ標準ブラウザへ誘導、できる場合は機種別の手順を案内するフロントエンド用ライブラリ",
+  "type": "module",
+  "files": ["dist"],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./ui": {
+      "types": "./dist/ui/index.d.ts",
+      "import": "./dist/ui/index.js"
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "keywords": ["add-to-home-screen", "a2hs", "pwa", "ホーム画面に追加", "in-app-browser"],
+  "license": "MIT",
+  "devDependencies": {
+    "@browser-how-to/shared": "workspace:*"
+  }
+}
