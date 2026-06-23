@@ -54,8 +54,7 @@
           どちらのパッケージからも同じ関数を import できます。
         </p>
         <div class="status" id="detect-output">判定中…</div>
-        <pre class="code"><code>import { detectDevice } from "@kuboon/how-to-a2hs";
-// passkey-guide からでも同じものを import できます
+        <pre class="code"><code>import { detectDevice } from "@kuboon/browser-how-to";
 
 const device = detectDevice();
 
@@ -74,13 +73,13 @@ device.isStandalone; // ホーム画面アプリとして起動中か</code></pr
       </section>
 
       <section class="card" id="a2hs">
-        <h2>① add-to-home-screen</h2>
+        <h2>① ホーム画面に追加（a2hs）</h2>
         <p>ホーム画面に追加できるか判定し、できなければ標準ブラウザへ誘導、できる場合は機種別の手順を案内します。</p>
         <div class="status" id="a2hs-status">判定中…</div>
         <div class="actions">
           <button class="btn" id="a2hs-show">案内を表示する</button>
         </div>
-        <pre class="code"><code>import { showA2hsGuide } from "@kuboon/how-to-a2hs/ui";
+        <pre class="code"><code>import { showA2hsGuide } from "@kuboon/browser-how-to/a2hs/ui";
 
 document.querySelector("#install").addEventListener("click", () =&gt; {
   showA2hsGuide();
@@ -88,16 +87,33 @@ document.querySelector("#install").addEventListener("click", () =&gt; {
       </section>
 
       <section class="card" id="passkey">
-        <h2>② passkey-guide</h2>
+        <h2>② パスキー（passkeys）</h2>
         <p>パスキーが使えるか判定し、使えなければ標準ブラウザへ誘導、使える場合はクロスデバイスや保存場所の仕組みを案内します。</p>
         <div class="status" id="passkey-status">判定中…</div>
         <div class="actions">
           <button class="btn" id="passkey-show">案内を表示する</button>
         </div>
-        <pre class="code"><code>import { showPasskeyGuide } from "@kuboon/how-to-passkeys/ui";
+        <pre class="code"><code>import { showPasskeyGuide } from "@kuboon/browser-how-to/passkeys/ui";
 
 document.querySelector("#passkey").addEventListener("click", () =&gt; {
   showPasskeyGuide();
+});</code></pre>
+      </section>
+
+      <section class="card" id="push">
+        <h2>③ プッシュ通知（push）</h2>
+        <p>
+          通知を受け取れる環境か判定し、iPhone で未インストールならホーム画面追加（a2hs）の案内へ、
+          アプリ内ブラウザなら標準ブラウザへ誘導します。通知の購読自体は行わず、前提条件を案内します。
+        </p>
+        <div class="status" id="push-status">判定中…</div>
+        <div class="actions">
+          <button class="btn" id="push-show">案内を表示する</button>
+        </div>
+        <pre class="code"><code>import { showPushGuide } from "@kuboon/browser-how-to/push/ui";
+
+document.querySelector("#push").addEventListener("click", () =&gt; {
+  showPushGuide();
 });</code></pre>
       </section>
     </main>

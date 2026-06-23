@@ -1,0 +1,67 @@
+{
+  "name": "@kuboon/browser-how-to",
+  "version": "0.1.0",
+  "description": "ホーム画面追加・パスキー・プッシュ通知が使えるか判定し、使えなければ標準ブラウザへ誘導、使える場合はやり方を案内するフロントエンド用ライブラリ",
+  "type": "module",
+  "files": ["dist"],
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kuboon/browser-how-to.git",
+    "directory": "packages/browser-how-to"
+  },
+  "homepage": "https://github.com/kuboon/browser-how-to#readme",
+  "bugs": "https://github.com/kuboon/browser-how-to/issues",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./a2hs": {
+      "types": "./dist/a2hs/index.d.ts",
+      "import": "./dist/a2hs/index.js"
+    },
+    "./a2hs/ui": {
+      "types": "./dist/a2hs/ui.d.ts",
+      "import": "./dist/a2hs/ui.js"
+    },
+    "./passkeys": {
+      "types": "./dist/passkeys/index.d.ts",
+      "import": "./dist/passkeys/index.js"
+    },
+    "./passkeys/ui": {
+      "types": "./dist/passkeys/ui.d.ts",
+      "import": "./dist/passkeys/ui.js"
+    },
+    "./push": {
+      "types": "./dist/push/index.d.ts",
+      "import": "./dist/push/index.js"
+    },
+    "./push/ui": {
+      "types": "./dist/push/ui.d.ts",
+      "import": "./dist/push/ui.js"
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "publish:jsr": "jsr publish"
+  },
+  "keywords": [
+    "add-to-home-screen",
+    "a2hs",
+    "passkey",
+    "webauthn",
+    "web-push",
+    "pwa",
+    "in-app-browser",
+    "ホーム画面に追加",
+    "パスキー"
+  ],
+  "license": "MIT"
+}

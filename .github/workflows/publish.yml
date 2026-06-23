@@ -1,4 +1,5 @@
 # パッケージ公開ワークフロー（GitHub Packages + JSR、npm には公開しない）
+# 単一パッケージ @kuboon/browser-how-to を公開する。
 #
 # 【テスト中の設定】
 #   いまは検証のため、この PR ブランチへの push と手動実行（workflow_dispatch）で動きます。
@@ -11,11 +12,9 @@
 #       workflow_dispatch:
 #
 # 【事前準備（初回のみ）】
-#   - GitHub Packages: 追加設定不要（GITHUB_TOKEN で公開）。公開後は Packages タブに表示。
-#   - JSR: jsr.io で @kuboon スコープを作成し、各パッケージ
-#       （@kuboon/how-to-a2hs / @kuboon/how-to-passkeys）を作成して、
-#       GitHub リポジトリ kuboon/browser-how-to に「リンク」しておく。
-#       → これで id-token（OIDC）による trusted publishing が通ります。
+#   - GitHub Packages: 追加設定不要（GITHUB_TOKEN で公開）。
+#   - JSR: jsr.io で @kuboon スコープを作成し、パッケージ @kuboon/browser-how-to を作成して、
+#     GitHub リポジトリ kuboon/browser-how-to に「リンク」しておく（OIDC 公開用）。
 #
 # 【注意】同じ version は再公開できません。再テスト時は version を上げてください。
 
@@ -44,7 +43,7 @@ jobs:
           scope: "@kuboon"
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      # private な shared / site は対象外。public な2パッケージのみ公開される。
+      # private な site は対象外。public な @kuboon/browser-how-to のみ公開される。
       - run: pnpm -r publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -64,9 +63,6 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      - name: Publish @kuboon/how-to-a2hs
+      - name: Publish @kuboon/browser-how-to
         run: npx -y jsr@latest publish
-        working-directory: packages/add-to-home-screen
-      - name: Publish @kuboon/how-to-passkeys
-        run: npx -y jsr@latest publish
-        working-directory: packages/passkey-guide
+        working-directory: packages/browser-how-to

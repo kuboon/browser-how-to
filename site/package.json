@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@kuboon/how-to-a2hs": "workspace:*",
-    "@kuboon/how-to-passkeys": "workspace:*"
+    "@kuboon/browser-how-to": "workspace:*"
   }
 }

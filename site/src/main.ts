@@ -1,7 +1,10 @@
-import { createA2hs, detectDevice } from "@kuboon/how-to-a2hs";
-import { showA2hsGuide } from "@kuboon/how-to-a2hs/ui";
-import { createPasskeyGuide } from "@kuboon/how-to-passkeys";
-import { showPasskeyGuide } from "@kuboon/how-to-passkeys/ui";
+import { detectDevice } from "@kuboon/browser-how-to";
+import { createA2hs } from "@kuboon/browser-how-to/a2hs";
+import { showA2hsGuide } from "@kuboon/browser-how-to/a2hs/ui";
+import { createPasskeyGuide } from "@kuboon/browser-how-to/passkeys";
+import { showPasskeyGuide } from "@kuboon/browser-how-to/passkeys/ui";
+import { createPushGuide } from "@kuboon/browser-how-to/push";
+import { showPushGuide } from "@kuboon/browser-how-to/push/ui";
 
 interface Preset {
   label: string;
@@ -55,6 +58,14 @@ const PASSKEY_LABELS: Record<string, string> = {
   unsupported: "❌ パスキー非対応",
 };
 
+const PUSH_LABELS: Record<string, string> = {
+  ready: "✅ 通知を許可できます",
+  "needs-install": "📲 先にホーム画面に追加が必要（iOS）",
+  "in-app-blocked": "⛔ アプリ内ブラウザ → 標準ブラウザへ誘導",
+  denied: "🔕 通知がブロック済み（設定から再許可）",
+  unsupported: "❌ 通知に非対応",
+};
+
 const $ = <T extends Element>(sel: string): T => {
   const el = document.querySelector<T>(sel);
   if (!el) throw new Error(`missing element: ${sel}`);
@@ -103,6 +114,14 @@ async function refreshPasskey(): Promise<void> {
     ` / 自動入力: ${c.conditionalMediationAvailable ? "はい" : "いいえ"}</span>`;
 }
 
+function refreshPush(): void {
+  const ua = currentUa();
+  const status = createPushGuide({ userAgent: ua }).getStatus();
+  $("#push-status").innerHTML =
+    `<strong>${PUSH_LABELS[status.support] ?? status.support}</strong><br />` +
+    `<span class="muted small">permission: ${status.permission}</span>`;
+}
+
 function init(): void {
   const select = $<HTMLSelectElement>("#ua-preset");
   select.innerHTML = "";
@@ -116,6 +135,7 @@ function init(): void {
     refreshDetect();
     refreshA2hs();
     void refreshPasskey();
+    refreshPush();
   });
 
   $("#a2hs-show").addEventListener("click", () => {
@@ -124,10 +144,14 @@ function init(): void {
   $("#passkey-show").addEventListener("click", () => {
     showPasskeyGuide({ userAgent: currentUa() });
   });
+  $("#push-show").addEventListener("click", () => {
+    showPushGuide({ userAgent: currentUa() });
+  });
 
   refreshDetect();
   refreshA2hs();
   void refreshPasskey();
+  refreshPush();
 }
 
 init();

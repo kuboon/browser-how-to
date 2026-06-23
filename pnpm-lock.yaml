@@ -27,28 +27,13 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.0)(jsdom@25.0.1)
 
-  packages/add-to-home-screen:
-    devDependencies:
-      '@kuboon/how-to-shared':
-        specifier: workspace:*
-        version: link:../shared
-
-  packages/passkey-guide:
-    devDependencies:
-      '@kuboon/how-to-shared':
-        specifier: workspace:*
-        version: link:../shared
-
-  packages/shared: {}
+  packages/browser-how-to: {}
 
   site:
     dependencies:
-      '@kuboon/how-to-a2hs':
+      '@kuboon/browser-how-to':
         specifier: workspace:*
-        version: link:../packages/add-to-home-screen
-      '@kuboon/how-to-passkeys':
-        specifier: workspace:*
-        version: link:../packages/passkey-guide
+        version: link:../packages/browser-how-to
 
 packages:
 

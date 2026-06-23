@@ -8,8 +8,7 @@
     "build": "pnpm -r --filter \"./packages/*\" run build",
     "typecheck": "pnpm -r --filter \"./packages/*\" run typecheck",
     "test": "pnpm -r --filter \"./packages/*\" run test",
-    "dev:a2hs": "pnpm --filter @kuboon/how-to-a2hs run dev",
-    "dev:passkey": "pnpm --filter @kuboon/how-to-passkeys run dev"
+    "dev": "pnpm --filter @kuboon/how-to-site dev"
   },
   "license": "MIT",
   "packageManager": "pnpm@10.33.0",
