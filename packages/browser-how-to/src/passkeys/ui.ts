@@ -5,14 +5,14 @@ import {
   createParagraph,
   renderSteps,
   type ModalHandle,
-} from "@browser-how-to/shared/dom";
-import { createPasskeyGuide } from "../controller.js";
+} from "../core/dom.js";
+import { createPasskeyGuide } from "./controller.js";
 import type {
   ExplainTopic,
   PasskeyExplainer,
   PasskeyGuideController,
   PasskeyStatus,
-} from "../types.js";
+} from "./types.js";
 
 export interface PasskeyGuideUiOptions {
   controller?: PasskeyGuideController;
@@ -189,5 +189,5 @@ function appendClose(body: HTMLElement, modal: ModalHandle): void {
   body.append(actions);
 }
 
-export { createPasskeyGuide, detectPasskeyStatus } from "../controller.js";
-export type { PasskeyGuideController, PasskeyStatus } from "../types.js";
+export { createPasskeyGuide, detectPasskeyStatus } from "./controller.js";
+export type { PasskeyGuideController, PasskeyStatus } from "./types.js";

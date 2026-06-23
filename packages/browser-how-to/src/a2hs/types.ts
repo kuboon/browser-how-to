@@ -1,4 +1,4 @@
-import type { DeviceInfo, GuideStep } from "@browser-how-to/shared";
+import type { DeviceInfo, GuideStep } from "../core/index.js";
 
 /**
  * ホーム画面追加の対応レベル。
@@ -53,8 +53,8 @@ export interface A2hsController {
    * Android は自動遷移、iOS は手動手順を返す。
    */
   escapeInAppBrowser(
-    options?: import("@browser-how-to/shared").EscapeOptions,
-  ): import("@browser-how-to/shared").EscapeResult;
+    options?: import("../core/index.js").EscapeOptions,
+  ): import("../core/index.js").EscapeResult;
   /** 状態変化（インストール可能になった/インストール済みになった）を購読する。 */
   onChange(listener: (status: A2hsStatus) => void): () => void;
 }

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { createPasskeyGuide } from "./controller.js";
 import { detectPasskeyCapabilities } from "./detect.js";
 import { explain } from "./explain.js";
-import { detectDevice } from "@browser-how-to/shared";
+import { detectDevice } from "../core/index.js";
 
 const UA = {
   androidChrome:

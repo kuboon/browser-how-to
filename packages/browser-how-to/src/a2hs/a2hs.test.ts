@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { detectDevice } from "@browser-how-to/shared";
+import { detectDevice } from "../core/index.js";
 import { buildInstructions } from "./instructions.js";
 import { createA2hs } from "./controller.js";
 

@@ -1,4 +1,4 @@
-import type { DeviceInfo } from "@browser-how-to/shared";
+import type { DeviceInfo } from "../core/index.js";
 import type { ExplainTopic, PasskeyExplainer } from "./types.js";
 
 /** その端末でパスキーが保存される場所の名称（日本語）。 */

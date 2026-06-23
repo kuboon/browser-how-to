@@ -4,7 +4,7 @@ import {
   type DeviceInfo,
   type EscapeOptions,
   type EscapeResult,
-} from "@browser-how-to/shared";
+} from "../core/index.js";
 import { detectPasskeyCapabilities } from "./detect.js";
 import { explain } from "./explain.js";
 import type {

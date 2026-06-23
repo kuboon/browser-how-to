@@ -1,5 +1,5 @@
 {
-  "name": "@browser-how-to/site",
+  "name": "@kuboon/how-to-site",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@browser-how-to/add-to-home-screen": "workspace:*",
-    "@browser-how-to/passkey-guide": "workspace:*"
+    "@kuboon/browser-how-to": "workspace:*"
   }
 }

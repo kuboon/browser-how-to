@@ -1,3 +1,5 @@
+// 内部共有モジュール（旧 @kuboon/how-to-shared）のバレル。
+// パッケージ内からは相対 import（../core/index.js）で参照する。
 export * from "./types.js";
 export {
   detectDevice,

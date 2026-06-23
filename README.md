@@ -1,81 +1,77 @@
 # browser-how-to
 
-「**ホーム画面に追加**」と「**パスキー認証**」を、あらゆる Web サービスに安心して導入するためのフロントエンド用パッケージ群です。
+「**ホーム画面に追加**」「**パスキー**」「**プッシュ通知**」を、あらゆる Web サービスに安心して導入するための
+フロントエンド用ライブラリ **`@kuboon/browser-how-to`** を提供します。
 
 スマホ向け Web サービスでは、次のような“あと一歩”でつまずく人がたくさんいます。
 
-- **Facebook Messenger などのアプリ内ブラウザ**から開かれると、ホーム画面追加もパスキーも使えない
+- **Facebook Messenger などのアプリ内ブラウザ**から開かれると、ホーム画面追加・パスキー・通知が使えない
 - ホーム画面への追加は **iPhone / Android・ブラウザ・バージョン**で操作が違い、機械が苦手な人には難しい
 - パスキーは仕組みが分かりにくく、「**スマホで登録したのにパソコンでログインできない**」と戸惑う
+- iPhone のプッシュ通知は「**ホーム画面に追加した後**」でないと使えないことが知られていない
 
-このリポジトリは、その課題を 2 つの独立したパッケージで解決します。どちらもフロントエンドの
-JavaScript / TypeScript から数行で呼び出せ、フレームワークに依存しません（Vanilla JS）。
+このライブラリは各機能について「**使える環境か判定 → 使えなければ標準ブラウザへ誘導 → 使える場合はやり方を案内**」
+します。フレームワーク非依存（Vanilla JS / TS）で数行から組み込めます。
 
-## パッケージ
+## 単一パッケージ + サブパス
 
-| パッケージ | 役割 |
+機能はサブパスで分かれており、必要なものだけ import すれば残りはバンドルされません（tree-shaking）。
+
+| import | 役割 |
 | --- | --- |
-| [`@browser-how-to/add-to-home-screen`](./packages/add-to-home-screen) | ホーム画面に追加できるか判定し、できなければ標準ブラウザへ誘導、できる場合は機種別の手順を案内 |
-| [`@browser-how-to/passkey-guide`](./packages/passkey-guide) | パスキーが使えるか判定し、使えなければ標準ブラウザへ誘導、使える場合はクロスデバイス等の仕組みを案内 |
+| `@kuboon/browser-how-to` | 端末・ブラウザ・アプリ内ブラウザの検出（`detectDevice` 等） |
+| `@kuboon/browser-how-to/a2hs`（`/ui`） | ホーム画面に追加の判定・手順案内 |
+| `@kuboon/browser-how-to/passkeys`（`/ui`） | パスキーの判定・仕組み案内 |
+| `@kuboon/browser-how-to/push`（`/ui`） | プッシュ通知の前提案内（iOS は内部で a2hs を利用） |
 
-両パッケージは内部で共有ロジック（`packages/shared`：端末・ブラウザ・アプリ内ブラウザの検出と標準ブラウザへの脱出）を使っています。
+「push 通知 + passkeys」を両方使う／「passkeys だけ」使う、のどちらも同じパッケージで完結します。
+`push` を使うと a2hs も含まれ、`passkeys` だけなら a2hs/push は含まれません。
 
 ## デモ
 
-GitHub Pages にデモを公開しています（環境シミュレーター付き）。
+GitHub Pages に環境シミュレーター付きデモを公開しています。
 
 👉 **https://kuboon.github.io/browser-how-to/**
 
 ## クイックスタート
 
 ```ts
-// ① ホーム画面に追加
-import { showA2hsGuide } from "@browser-how-to/add-to-home-screen/ui";
-document.querySelector("#install")!.addEventListener("click", () => showA2hsGuide());
+import { showPushGuide } from "@kuboon/browser-how-to/push/ui";
+import { showPasskeyGuide } from "@kuboon/browser-how-to/passkeys/ui";
 
-// ② パスキーの案内
-import { showPasskeyGuide } from "@browser-how-to/passkey-guide/ui";
-document.querySelector("#passkey")!.addEventListener("click", () => showPasskeyGuide());
+document.querySelector("#enable-push")!.addEventListener("click", () => showPushGuide());
+document.querySelector("#about-passkey")!.addEventListener("click", () => showPasskeyGuide());
 ```
 
-UI を使わず、判定ロジックだけを使うこともできます（コアはヘッドレス）。
+判定だけ（ヘッドレス）:
 
 ```ts
-import { createA2hs } from "@browser-how-to/add-to-home-screen";
-const status = createA2hs().getStatus();
-// status.support: "installed" | "native-prompt" | "manual" | "in-app-blocked" | "unsupported"
-```
-
-### アプリ内ブラウザ判定だけを使う
-
-端末・ブラウザ・アプリ内ブラウザの判定は `detectDevice()` で行えます（両パッケージから同じものを import 可能）。
-
-```ts
-import { detectDevice } from "@browser-how-to/add-to-home-screen";
-
+import { detectDevice } from "@kuboon/browser-how-to";
 const device = detectDevice();
-if (device.inApp.isInApp) {
-  device.inApp.appId;    // "messenger" | "facebook" | "instagram" | "line" | "twitter" | ...
-  device.inApp.appLabel; // "Facebook Messenger" など（表示用）
-  // → ホーム画面追加もパスキーも使えないので標準ブラウザへ誘導する
-}
-device.platform; // "ios" | "ipados" | "android" | "desktop" | "unknown"
-device.browser;  // "safari" | "chrome" | "samsung" | "firefox" | ...
+if (device.inApp.isInApp) device.inApp.appLabel; // 例: "Facebook Messenger"
 ```
 
-詳細は各パッケージの README を参照してください。
+詳細は [`packages/browser-how-to/README.md`](./packages/browser-how-to) を参照してください。
+
+## 配布
+
+**JSR** と **GitHub Packages** で配布します（npmjs.com には公開しません）。
+
+- JSR: `npx jsr add @kuboon/browser-how-to`
+- GitHub Packages: `@kuboon` スコープを `https://npm.pkg.github.com` に向けた `.npmrc` を用意して `npm i`
+
+公開は `.github/workflows/publish.yml`（GitHub Packages は `GITHUB_TOKEN`、JSR は OIDC trusted publishing）。
 
 ## 開発
 
-pnpm のモノレポです。
+pnpm のモノレポ（公開パッケージ + デモサイト）です。
 
 ```bash
 pnpm install
 pnpm typecheck   # 型チェック
 pnpm test        # ユニットテスト（Vitest）
-pnpm build       # 各パッケージのビルド（Vite ライブラリモード）
-
-pnpm --filter @browser-how-to/site dev   # デモサイトをローカル起動
+pnpm build       # ライブラリビルド（Vite、サブパス別エントリ）
+pnpm dev         # デモサイトをローカル起動
 ```
 
 ## ライセンス

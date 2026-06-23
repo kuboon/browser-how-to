@@ -1,4 +1,4 @@
-import type { DeviceInfo, GuideStep } from "@browser-how-to/shared";
+import type { DeviceInfo, GuideStep } from "../core/index.js";
 
 export interface PasskeyCapabilities {
   /** WebAuthn（パスキー）に対応しているか。 */
@@ -53,8 +53,8 @@ export interface PasskeyGuideController {
   getDevice(): DeviceInfo;
   /** インアプリブラウザから標準ブラウザへ脱出する。 */
   escapeInAppBrowser(
-    options?: import("@browser-how-to/shared").EscapeOptions,
-  ): import("@browser-how-to/shared").EscapeResult;
+    options?: import("../core/index.js").EscapeOptions,
+  ): import("../core/index.js").EscapeResult;
   /** 指定トピックの案内コンテンツを取得する。 */
   explain(topic: ExplainTopic): PasskeyExplainer;
 }

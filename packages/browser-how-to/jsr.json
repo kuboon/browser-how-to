@@ -1,0 +1,17 @@
+{
+  "name": "@kuboon/browser-how-to",
+  "version": "0.1.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./a2hs": "./src/a2hs/index.ts",
+    "./a2hs/ui": "./src/a2hs/ui.ts",
+    "./passkeys": "./src/passkeys/index.ts",
+    "./passkeys/ui": "./src/passkeys/ui.ts",
+    "./push": "./src/push/index.ts",
+    "./push/ui": "./src/push/ui.ts"
+  },
+  "publish": {
+    "include": ["src", "README.md", "LICENSE", "jsr.json"],
+    "exclude": ["src/**/*.test.ts"]
+  }
+}

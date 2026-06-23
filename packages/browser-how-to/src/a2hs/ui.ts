@@ -5,9 +5,9 @@ import {
   createModal,
   renderSteps,
   type ModalHandle,
-} from "@browser-how-to/shared/dom";
-import { createA2hs } from "../controller.js";
-import type { A2hsController, A2hsStatus } from "../types.js";
+} from "../core/dom.js";
+import { createA2hs } from "./controller.js";
+import type { A2hsController, A2hsStatus } from "./types.js";
 
 export interface A2hsGuideOptions {
   /** 既存のコントローラを使う場合に指定。省略時は内部で生成。 */
@@ -174,5 +174,5 @@ function renderManual(
   body.append(actions);
 }
 
-export { createA2hs } from "../controller.js";
-export type { A2hsController, A2hsStatus } from "../types.js";
+export { createA2hs } from "./controller.js";
+export type { A2hsController, A2hsStatus } from "./types.js";

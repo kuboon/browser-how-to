@@ -16,4 +16,4 @@ export {
   type DeviceInfo,
   type GuideStep,
   type EscapeResult,
-} from "@browser-how-to/shared";
+} from "../core/index.js";

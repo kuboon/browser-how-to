@@ -2,7 +2,7 @@ import {
   escapeInAppBrowser,
   type DeviceInfo,
   type GuideStep,
-} from "@browser-how-to/shared";
+} from "../core/index.js";
 import type { InstructionSet } from "./types.js";
 
 /**
