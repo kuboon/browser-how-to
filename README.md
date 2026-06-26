@@ -27,11 +27,13 @@
 「push 通知 + passkeys」を両方使う／「passkeys だけ」使う、のどちらも同じパッケージで完結します。
 `push` を使うと a2hs も含まれ、`passkeys` だけなら a2hs/push は含まれません。
 
-## デモ
+## デモ・ドキュメント
 
-GitHub Pages に環境シミュレーター付きデモを公開しています。
+GitHub Pages で公開しています。
 
-👉 **https://kuboon.github.io/browser-how-to/**
+- 環境シミュレーター付きデモ 👉 **https://kuboon.github.io/browser-how-to/**
+- 使い方 / API リファレンス（1ページ完結）👉 **https://kuboon.github.io/browser-how-to/usage.html**
+- AI 向けプレーン版（このページだけで統合可）👉 **https://kuboon.github.io/browser-how-to/llms.txt**
 
 ## クイックスタート
 
