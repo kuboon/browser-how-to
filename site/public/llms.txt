@@ -1,0 +1,146 @@
+# @kuboon/browser-how-to
+
+> フロントエンド（Vanilla JS / TS、フレームワーク非依存）ライブラリ。「ホーム画面に追加(a2hs)」「パスキー(passkeys)」「プッシュ通知(push)」について、使える環境かを判定し、使えなければ標準ブラウザへ誘導し、使える場合は日本語でやり方を案内する。判定と案内に徹し、パスキーの登録やプッシュの購読自体は行わない（ホスト側/別サービスが実装する）。
+
+このファイルだけでライブラリを利用統合できます。バージョン: 0.1.0 / ライセンス: MIT / リポジトリ: https://github.com/kuboon/browser-how-to
+
+## インストール（npmjs.com には未公開）
+
+- JSR（推奨）: `npx jsr add @kuboon/browser-how-to`（Deno: `deno add jsr:@kuboon/browser-how-to`）
+- GitHub Packages: `.npmrc` に `@kuboon:registry=https://npm.pkg.github.com` を書いてから `npm i @kuboon/browser-how-to`
+
+## エントリ（サブパス）
+
+必要な機能だけ import すれば他はバンドルされない（tree-shaking）。`push` は内部で `a2hs` を利用する。
+
+- `@kuboon/browser-how-to` — 検出 API と型
+- `@kuboon/browser-how-to/a2hs` , `/a2hs/ui` — ホーム画面追加
+- `@kuboon/browser-how-to/passkeys` , `/passkeys/ui` — パスキー
+- `@kuboon/browser-how-to/push` , `/push/ui` — プッシュ通知
+
+UI 関数はすべて `show*Guide(options?) => { close(): void }`。共通 options: `{ userAgent?: string; zIndex?: number; onClose?: () => void; controller?: <対応するController> }`。環境を判定して適切なモーダルを出し分ける。CSS は `bht-` プレフィックスのクラスで上書き可。案内文言は日本語のみ。すべての検出関数は第1引数/`userAgent` オプションで UA を差し替え可能（SSR/テスト用）。
+
+## 共通の型
+
+```ts
+type Platform = "ios" | "ipados" | "android" | "desktop" | "unknown";
+type BrowserName = "safari" | "chrome" | "firefox" | "samsung" | "edge" | "opera" | "other";
+type InAppBrowserId = "facebook" | "messenger" | "instagram" | "threads" | "line" | "twitter"
+  | "wechat" | "tiktok" | "kakaotalk" | "snapchat" | "pinterest" | "generic-webview";
+interface InAppBrowserInfo { isInApp: boolean; appId: InAppBrowserId | null; appLabel: string | null; }
+interface DeviceInfo {
+  platform: Platform;
+  osVersion: { major: number; minor: number } | null;
+  browser: BrowserName;
+  inApp: InAppBrowserInfo;
+  isStandalone: boolean; // ホーム画面アプリ(standalone)として起動中か
+  userAgent: string;
+}
+interface GuideStep { text: string; icon?: string; note?: string; }
+interface EscapeOptions { url?: string; androidPackage?: string; navigate?: (target: string) => void; }
+type EscapeResult =
+  | { method: "redirect"; ok: true; target: string; fallbackSteps: GuideStep[] } // Android=intent:// / iOS=x-safari-https://
+  | { method: "manual"; ok: false; steps: GuideStep[] }; // PC など
+```
+
+## ルート: `@kuboon/browser-how-to`（すべて同期）
+
+```ts
+import { detectDevice, detectInAppBrowser, isStandardBrowser, escapeInAppBrowser,
+  detectPlatform, detectBrowser, detectOsVersion, detectStandalone,
+  buildAndroidIntentUrl, buildSafariSchemeUrl } from "@kuboon/browser-how-to";
+
+detectDevice(userAgent?: string): DeviceInfo;
+detectInAppBrowser(ua: string): InAppBrowserInfo;
+isStandardBrowser(device: DeviceInfo): boolean; // iOS=Safari / Android=主要ブラウザ かつ アプリ内でない
+escapeInAppBrowser(device: DeviceInfo, options?: EscapeOptions): EscapeResult;
+buildAndroidIntentUrl(url: string, androidPackage?: string): string;
+buildSafariSchemeUrl(url: string): string;
+```
+
+例:
+```ts
+const d = detectDevice();
+if (d.inApp.isInApp) { /* 標準ブラウザへ誘導。d.inApp.appLabel 例: "Facebook Messenger" */ }
+```
+
+## `/a2hs` — ホーム画面に追加
+
+```ts
+import { createA2hs, buildInstructions } from "@kuboon/browser-how-to/a2hs";
+import { showA2hsGuide } from "@kuboon/browser-how-to/a2hs/ui";
+
+type A2hsSupport = "installed" | "native-prompt" | "manual" | "in-app-blocked" | "unsupported";
+type PromptOutcome = "accepted" | "dismissed" | "unavailable";
+interface InstructionSet { title: string; steps: GuideStep[]; note?: string; }
+interface A2hsStatus { support: A2hsSupport; device: DeviceInfo; canPrompt: boolean; }
+
+const a2hs = createA2hs(options?: { userAgent?: string });
+a2hs.getStatus(): A2hsStatus;
+a2hs.promptInstall(): Promise<PromptOutcome>; // canPrompt(=Android Chrome系) のときに OS ダイアログ
+a2hs.getInstructions(): InstructionSet;        // 機種別の手動手順
+a2hs.escapeInAppBrowser(options?: EscapeOptions): EscapeResult;
+a2hs.onChange(listener: (s: A2hsStatus) => void): () => void; // 解除関数を返す
+
+showA2hsGuide(options?: { userAgent?; zIndex?; onClose?; onInstalled?: () => void; controller? }): { close(): void };
+```
+
+注: `beforeinstallprompt` は import 時に自動捕捉。PWA 化には manifest が別途必要。iOS は「共有→ホーム画面に追加」の手順案内（support="manual"）。
+
+## `/passkeys` — パスキー
+
+```ts
+import { createPasskeyGuide, detectPasskeyStatus, detectPasskeyCapabilities, explain }
+  from "@kuboon/browser-how-to/passkeys";
+import { showPasskeyGuide } from "@kuboon/browser-how-to/passkeys/ui";
+
+type PasskeySupport = "full" | "cross-device-only" | "in-app-blocked" | "unsupported";
+interface PasskeyCapabilities {
+  webauthnSupported: boolean; platformAuthenticatorAvailable: boolean;
+  conditionalMediationAvailable: boolean; crossDeviceSupported: boolean;
+  relatedOriginsSupported: boolean; usedClientCapabilities: boolean;
+}
+interface PasskeyStatus { support: PasskeySupport; capabilities: PasskeyCapabilities; device: DeviceInfo; }
+type ExplainTopic = "what-is-passkey" | "cross-device" | "where-saved";
+interface PasskeyExplainer { title: string; body: string[]; steps?: GuideStep[]; }
+
+detectPasskeyStatus(options?: { userAgent?: string }): Promise<PasskeyStatus>;
+detectPasskeyCapabilities(): Promise<PasskeyCapabilities>;
+const g = createPasskeyGuide(options?: { userAgent?: string });
+g.detect(): Promise<PasskeyStatus>;
+g.getDevice(): DeviceInfo;
+g.escapeInAppBrowser(options?: EscapeOptions): EscapeResult;
+g.explain(topic: ExplainTopic): PasskeyExplainer;
+
+showPasskeyGuide(options?: { userAgent?; zIndex?; onClose?; controller? }): { close(): void };
+```
+
+注: 判定は `PublicKeyCredential.getClientCapabilities()`（未対応は `isUVPAA()`/`isConditionalMediationAvailable()` にフォールバック）。実際の登録・認証(`navigator.credentials`)はサーバー連携が必要でホスト側が実装する。
+
+## `/push` — プッシュ通知（案内のみ。購読・許可要求はしない）
+
+```ts
+import { createPushGuide, detectPushStatus } from "@kuboon/browser-how-to/push";
+import { showPushGuide } from "@kuboon/browser-how-to/push/ui";
+
+type PushSupport = "ready" | "needs-install" | "in-app-blocked" | "denied" | "unsupported";
+type PushPermission = "default" | "granted" | "denied" | "unsupported";
+interface PushStatus { support: PushSupport; permission: PushPermission; device: DeviceInfo; }
+
+detectPushStatus(options?: { userAgent?: string }): PushStatus; // 同期
+const p = createPushGuide(options?: { userAgent?: string });
+p.getStatus(): PushStatus;
+p.escapeInAppBrowser(options?: EscapeOptions): EscapeResult;
+p.getReenableSteps(): GuideStep[]; // 端末別の再許可手順
+
+showPushGuide(options?: { userAgent?; zIndex?; onClose?; controller? }): { close(): void };
+```
+
+PushSupport の意味:
+- ready: この後ブラウザの許可ダイアログで「許可」を選べば受け取れる
+- needs-install: iOS で未インストール → 先にホーム画面追加(a2hs)が必要（show版は内部で showA2hsGuide を呼ぶ）
+- in-app-blocked: アプリ内ブラウザ → 標準ブラウザへ誘導
+- denied: ブロック済み → getReenableSteps() の手順で再許可
+- unsupported: 通知に非対応
+
+注: iOS は「ホーム画面に追加した PWA」でのみ Web Push が使える。
