@@ -13,7 +13,7 @@ jobs:
       pages: write
       pull-requests: write
       id-token: write
-    uses: kuboon/workflows/.github/workflows/github-page-with-preview.yaml@v0.15.0
+    uses: kuboon/workflows/.github/workflows/github-page-with-preview.yaml@main
     with:
       build-command: |
         corepack enable
