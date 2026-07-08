@@ -59,7 +59,7 @@ if (device.inApp.isInApp) device.inApp.appLabel; // 例: "Facebook Messenger"
 
 **JSR** と **GitHub Packages** で配布します（npmjs.com には公開しません）。
 
-- JSR: `npx jsr add @kuboon/browser-how-to`
+- JSR: [`@kuboon/browser-how-to`](https://jsr.io/@kuboon/browser-how-to) — `npx jsr add @kuboon/browser-how-to`
 - GitHub Packages: `@kuboon` スコープを `https://npm.pkg.github.com` に向けた `.npmrc` を用意して `npm i`
 
 公開は `.github/workflows/publish.yml`（GitHub Packages は `GITHUB_TOKEN`、JSR は OIDC trusted publishing）。

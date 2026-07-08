@@ -15,7 +15,7 @@
 
 ## インストール
 
-**JSR**（推奨）:
+**JSR**（推奨）— [jsr.io/@kuboon/browser-how-to](https://jsr.io/@kuboon/browser-how-to):
 
 ```bash
 npx jsr add @kuboon/browser-how-to

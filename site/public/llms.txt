@@ -6,7 +6,7 @@
 
 ## インストール（npmjs.com には未公開）
 
-- JSR（推奨）: `npx jsr add @kuboon/browser-how-to`（Deno: `deno add jsr:@kuboon/browser-how-to`）
+- JSR（推奨）: https://jsr.io/@kuboon/browser-how-to — `npx jsr add @kuboon/browser-how-to`（Deno: `deno add jsr:@kuboon/browser-how-to`）
 - GitHub Packages: `.npmrc` に `@kuboon:registry=https://npm.pkg.github.com` を書いてから `npm i @kuboon/browser-how-to`
 
 ## エントリ（サブパス）
