@@ -101,6 +101,15 @@ with steps on desktop.
   Android Chromium (`status.canPrompt`). iOS is always the manual
   "Share → Add to Home Screen" walkthrough (`support: "manual"`). PWA install
   still needs a real web app manifest — the library guides, it doesn't create it.
+  Already-installed state is remembered across reloads/new tabs via
+  `localStorage`, so you won't re-prompt a user who installed earlier in a
+  different tab or session — don't build your own "already installed" flag on
+  top of this. `refreshInstallState()` additionally asks
+  `navigator.getInstalledRelatedApps()` (Android Chrome family only; requires
+  `related_applications: [{ platform: "webapp", url: "<manifest URL>" }]` in
+  your manifest) as an extra confirmation signal; `showA2hsGuide()` already
+  calls it and swaps to the "already installed" view if it resolves after the
+  initial render, so call it yourself only if you're using the headless API.
 - **passkeys** — `detectPasskeyStatus()` (async) / `showPasskeyGuide()`.
   Detection uses `PublicKeyCredential.getClientCapabilities()` with fallback to
   `isUVPAA()` / `isConditionalMediationAvailable()`. `support` is
