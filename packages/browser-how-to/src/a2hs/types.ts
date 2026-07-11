@@ -57,4 +57,12 @@ export interface A2hsController {
   ): import("../core/index.js").EscapeResult;
   /** 状態変化（インストール可能になった/インストール済みになった）を購読する。 */
   onChange(listener: (status: A2hsStatus) => void): () => void;
+  /**
+   * navigator.getInstalledRelatedApps()（Android Chrome 系のみ）で
+   * 「すでにインストール済み」を確認できないか問い合わせ、確認できれば
+   * 内部状態を更新して永続化する。判定できるまで結果を待ちたい場合に呼ぶ。
+   * 呼ばなくても isStandalone / appinstalled / localStorage による判定は
+   * getStatus() で常に反映されている。
+   */
+  refreshInstallState(): Promise<A2hsStatus>;
 }

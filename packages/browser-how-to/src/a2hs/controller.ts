@@ -6,6 +6,7 @@ import {
   type EscapeResult,
 } from "../core/index.js";
 import { buildInstructions } from "./instructions.js";
+import { hasInstalledRelatedApps } from "./relatedApps.js";
 import type {
   A2hsController,
   A2hsControllerOptions,
@@ -19,16 +20,49 @@ interface BeforeInstallPromptEvent extends Event {
   readonly userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
 }
 
+const INSTALLED_STORAGE_KEY = "bht:a2hs:installed";
+
+/**
+ * appinstalled はブラウザ・端末単位でしか発火せず、次にタブで開いたときは
+ * 覚えていないと再度プロンプト/手順を出してしまう。localStorage に恒久的に
+ * 記録しておき、ページ読み込みのたびに読み戻す。
+ */
+function readPersistedInstalled(): boolean {
+  try {
+    return typeof localStorage !== "undefined" && localStorage.getItem(INSTALLED_STORAGE_KEY) === "1";
+  } catch {
+    // プライベートモード等で localStorage が使えない場合は諦めて false 扱い。
+    return false;
+  }
+}
+
+function persistInstalled(): void {
+  try {
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem(INSTALLED_STORAGE_KEY, "1");
+    }
+  } catch {
+    // 保存できなくても致命的ではない（今回のセッション内は installed 変数で覚えている）。
+  }
+}
+
 /**
  * beforeinstallprompt はページ読み込み直後に一度だけ発火することがあるため、
  * モジュール読み込み時点で捕捉して保持しておく。
  */
 let deferredPrompt: BeforeInstallPromptEvent | null = null;
-let installed = false;
+let installed = readPersistedInstalled();
 const promptListeners = new Set<() => void>();
 
 function notify(): void {
   for (const l of promptListeners) l();
+}
+
+function markInstalled(): void {
+  deferredPrompt = null;
+  installed = true;
+  persistInstalled();
+  notify();
 }
 
 if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
@@ -37,11 +71,7 @@ if (typeof window !== "undefined" && typeof window.addEventListener === "functio
     deferredPrompt = e as BeforeInstallPromptEvent;
     notify();
   });
-  window.addEventListener("appinstalled", () => {
-    deferredPrompt = null;
-    installed = true;
-    notify();
-  });
+  window.addEventListener("appinstalled", markInstalled);
 }
 
 function computeSupport(device: DeviceInfo, canPrompt: boolean): A2hsSupport {
@@ -69,6 +99,7 @@ export function createA2hs(options: A2hsControllerOptions = {}): A2hsController 
       const choice = await evt.userChoice;
       if (choice.outcome === "accepted") {
         installed = true;
+        persistInstalled();
       }
       return choice.outcome;
     } finally {
@@ -86,11 +117,21 @@ export function createA2hs(options: A2hsControllerOptions = {}): A2hsController 
     return () => promptListeners.delete(wrapped);
   };
 
+  const refreshInstallState = async (): Promise<A2hsStatus> => {
+    // isStandalone / appinstalled / localStorage のいずれかで既にわかっていれば
+    // わざわざ非同期 API を呼ばない。
+    if (!installed && (await hasInstalledRelatedApps())) {
+      markInstalled();
+    }
+    return getStatus();
+  };
+
   return {
     getStatus,
     promptInstall,
     getInstructions: () => buildInstructions(device),
     escapeInAppBrowser: escape,
     onChange,
+    refreshInstallState,
   };
 }
