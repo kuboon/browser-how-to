@@ -46,6 +46,17 @@ export function showA2hsGuide(options: A2hsGuideOptions = {}): A2hsGuideHandle {
 
   renderBody(modal, controller, status, options);
 
+  if (status.support !== "installed") {
+    // getInstalledRelatedApps() は非同期なので、初回描画後に確認できたら
+    // インストール済み表示に差し替える(既に閉じられていれば何もしない)。
+    controller.refreshInstallState().then((refreshed) => {
+      if (refreshed.support === "installed" && !modal.closed) {
+        modal.setTitle(titleFor(refreshed));
+        renderBody(modal, controller, refreshed, options);
+      }
+    });
+  }
+
   return { close: modal.close };
 }
 

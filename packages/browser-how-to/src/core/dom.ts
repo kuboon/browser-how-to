@@ -80,6 +80,8 @@ export interface ModalHandle {
   body: HTMLElement;
   close: () => void;
   setTitle: (title: string) => void;
+  /** close() 済み(DOM から取り除かれた)かどうか。 */
+  readonly closed: boolean;
 }
 
 export interface ModalOptions {
@@ -141,6 +143,9 @@ export function createModal(opts: ModalOptions): ModalHandle {
     close,
     setTitle: (t: string) => {
       titleEl.textContent = t;
+    },
+    get closed() {
+      return !overlay.isConnected;
     },
   };
 }
