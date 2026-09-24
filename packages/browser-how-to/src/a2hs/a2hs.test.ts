@@ -6,10 +6,6 @@ import { createA2hs } from "./controller.js";
 const UA = {
   iphoneSafari:
     "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
-  iphoneSafari26:
-    "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Mobile/15E148 Safari/604.1",
-  iphoneSafari27:
-    "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.0 Mobile/15E148 Safari/604.1",
   iphoneChrome:
     "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/126.0 Mobile/15E148 Safari/604.1",
   androidChrome:
@@ -25,21 +21,11 @@ describe("buildInstructions", () => {
     expect(ins.steps.some((s) => s.text.includes("ホーム画面に追加"))).toBe(true);
   });
 
-  it("Safari 17 -> no compact-tabs note", () => {
+  it("iOS Safari -> share step shows the iOS share icon, not its location", () => {
     const ins = buildInstructions(detectDevice(UA.iphoneSafari));
-    expect(ins.steps[0]?.note).toBeUndefined();
-  });
-
-  it("Safari 26 -> compact tabs: share is in the ••• menu", () => {
-    const ins = buildInstructions(detectDevice(UA.iphoneSafari26));
-    expect(ins.steps[0]?.note).toContain("•••");
-    expect(ins.steps[0]?.note).not.toContain("長押し");
-  });
-
-  it("Safari 27 -> compact tabs: long-press the address bar", () => {
-    const ins = buildInstructions(detectDevice(UA.iphoneSafari27));
-    expect(ins.steps[0]?.note).toContain("アドレスバーを長押し");
-    expect(ins.steps[0]?.note).not.toContain("•••");
+    const share = ins.steps[0];
+    expect(share?.icon).toBe("ios-share");
+    expect(share?.text).not.toMatch(/画面下|右上/);
   });
 
   it("iOS Chrome -> tells user to reopen in Safari", () => {

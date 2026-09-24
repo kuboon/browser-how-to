@@ -46,6 +46,12 @@ const BASE_CSS = `
   display: flex; align-items: center; justify-content: center;
   font-size: 13px; font-weight: 700;
 }
+.bht-step-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; margin: 0 6px 0 0; vertical-align: middle;
+  border-radius: 7px; background: #f0f0f0; color: #007aff;
+}
+.bht-step-icon svg { width: 20px; height: 20px; }
 .bht-step-note { display: block; color: #888; font-size: 13px; margin-top: 2px; }
 .bht-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
 .bht-btn {
@@ -63,6 +69,7 @@ const BASE_CSS = `
   .bht-close { background: #2c2c2e; color: #aaa; }
   .bht-note { background: #2c2c2e; color: #bbb; }
   .bht-step { border-top-color: #2c2c2e; }
+  .bht-step-icon { background: #2c2c2e; color: #0a84ff; }
   .bht-btn--ghost { background: #2c2c2e; color: #f2f2f7; }
 }
 `;
@@ -150,12 +157,48 @@ export function createModal(opts: ModalOptions): ModalHandle {
   };
 }
 
+const SVG_NS = "http://www.w3.org/2000/svg";
+
+/** 描画できるステップアイコンの SVG パス（24x24、線画）。 */
+const STEP_ICON_PATHS: Record<string, string[]> = {
+  // iOS の共有アイコン（□に↑）。
+  "ios-share": [
+    "M8.5 9H7a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1.5",
+    "M12 3v11",
+    "M8.5 6.5 12 3l3.5 3.5",
+  ],
+};
+
+function renderStepIcon(icon: string, doc: Document): HTMLElement | null {
+  const paths = STEP_ICON_PATHS[icon];
+  if (!paths) return null;
+  const wrap = doc.createElement("span");
+  wrap.className = "bht-step-icon";
+  wrap.setAttribute("aria-hidden", "true");
+  const svg = doc.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("fill", "none");
+  svg.setAttribute("stroke", "currentColor");
+  svg.setAttribute("stroke-width", "1.8");
+  svg.setAttribute("stroke-linecap", "round");
+  svg.setAttribute("stroke-linejoin", "round");
+  for (const d of paths) {
+    const path = doc.createElementNS(SVG_NS, "path");
+    path.setAttribute("d", d);
+    svg.append(path);
+  }
+  wrap.append(svg);
+  return wrap;
+}
+
 export function renderSteps(steps: GuideStep[], doc: Document = document): HTMLElement {
   const ol = doc.createElement("ol");
   ol.className = "bht-steps";
   for (const step of steps) {
     const li = doc.createElement("li");
     li.className = "bht-step";
+    const icon = step.icon ? renderStepIcon(step.icon, doc) : null;
+    if (icon) li.append(icon);
     li.append(doc.createTextNode(step.text));
     if (step.note) {
       const note = doc.createElement("span");

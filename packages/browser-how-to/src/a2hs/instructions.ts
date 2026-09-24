@@ -6,54 +6,15 @@ import {
 import type { InstructionSet } from "./types.js";
 
 /**
- * UA の "Version/26.0" から Safari のメジャーバージョンを取る。
- * iOS 26 以降の Safari は UA の OS バージョンを "18_6" に固定しているため、
- * OS バージョンではなく Safari のバージョンで判定する。
- */
-function safariMajorVersion(device: DeviceInfo): number | null {
-  const m = device.userAgent.match(/Version\/(\d+)/);
-  return m ? Number(m[1]) : null;
-}
-
-/**
- * タブの表示が「コンパクト」のとき共有ボタンは画面に出ていない。
- * この設定は Web から取得できないため、見つからない場合の出し方を補足する。
- * - Safari 26: 右下の「•••」メニューの中
- * - Safari 27 以降: 右下のボタンはタブ切り替えになり、メニューはアドレスバーの長押し
- */
-function compactTabsShareNote(device: DeviceInfo): string | undefined {
-  const prefix = "共有ボタンが見当たらない場合（タブの表示が「コンパクト」のとき）は、";
-  const version = safariMajorVersion(device);
-  if (version === null) {
-    return `${prefix}アドレスバーを長押しするか、アドレスバー横の「•••」をタップして、メニューから「共有」を選びます。`;
-  }
-  if (version >= 27) {
-    return `${prefix}アドレスバーを長押しして、メニューから「共有」を選びます。`;
-  }
-  if (version === 26) {
-    return `${prefix}アドレスバー横の「•••」をタップして、メニューから「共有」を選びます。`;
-  }
-  return undefined;
-}
-
-/**
  * iOS / iPadOS Safari でのホーム画面追加手順。
- * 共有ボタンの位置は iPhone（下中央）と iPad（右上）で異なるため出し分ける。
+ * 共有ボタンの位置はタブの表示設定（コンパクトなど）や OS バージョンで変わり、
+ * Web からは判別できないため、場所は書かずにアイコン（"ios-share"）で示す。
  */
-function iosSafariInstructions(device: DeviceInfo): InstructionSet {
-  const isPad = device.platform === "ipados";
-  const shareLocation = isPad
-    ? "画面右上にある共有ボタン（□に↑のアイコン）"
-    : "画面下の中央にある共有ボタン（□に↑のアイコン）";
-  const shareNote = compactTabsShareNote(device);
+function iosSafariInstructions(): InstructionSet {
   return {
     title: "ホーム画面に追加する手順（Safari）",
     steps: [
-      {
-        text: `${shareLocation}をタップします。`,
-        icon: "share",
-        ...(shareNote ? { note: shareNote } : {}),
-      },
+      { text: "共有ボタンをタップします。", icon: "ios-share" },
       {
         text: "メニューを下にスクロールし、「ホーム画面に追加」をタップします。",
         icon: "add",
@@ -74,7 +35,7 @@ function iosNonSafariInstructions(): InstructionSet {
       { text: "Safari を開き、アドレスバーに貼り付けて表示します。", icon: "browser" },
       {
         text: "Safari で開いたあと、共有ボタン →「ホーム画面に追加」を選びます。",
-        icon: "share",
+        icon: "ios-share",
       },
     ],
     note: "iPhone / iPad では、ホーム画面への追加は Safari からのみ行えます。",
@@ -143,7 +104,7 @@ export function buildInstructions(device: DeviceInfo): InstructionSet {
   }
   if (device.platform === "ios" || device.platform === "ipados") {
     return device.browser === "safari"
-      ? iosSafariInstructions(device)
+      ? iosSafariInstructions()
       : iosNonSafariInstructions();
   }
   if (device.platform === "android") {

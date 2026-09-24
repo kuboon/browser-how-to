@@ -76,7 +76,8 @@ export interface GuideStep {
   text: string;
   /**
    * UI で添えるアイコンのヒント。実体のアイコン描画は UI 側に委ねる。
-   * 例: "share" | "menu" | "more" | "browser" | "add"
+   * 例: "share" | "ios-share" | "menu" | "more" | "browser" | "add"
+   * "ios-share" は iOS の共有アイコン（□に↑）。付属の UI はこのアイコンを描画する。
    */
   icon?: string;
   /** 補足説明。 */
