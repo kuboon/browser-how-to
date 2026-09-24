@@ -36,7 +36,7 @@ interface DeviceInfo {
   isStandalone: boolean; // ホーム画面アプリ(standalone)として起動中か
   userAgent: string;
 }
-interface GuideStep { text: string; icon?: string; note?: string; }
+interface GuideStep { text: string; icon?: string; note?: string; } // icon "ios-share" = iOS の共有アイコン（□に↑）。付属 UI が描画する
 interface EscapeOptions { url?: string; androidPackage?: string; navigate?: (target: string) => void; }
 type EscapeResult =
   | { method: "redirect"; ok: true; target: string; fallbackSteps: GuideStep[] } // Android=intent:// / iOS=x-safari-https://

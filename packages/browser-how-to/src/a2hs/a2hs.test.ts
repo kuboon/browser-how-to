@@ -21,6 +21,13 @@ describe("buildInstructions", () => {
     expect(ins.steps.some((s) => s.text.includes("ホーム画面に追加"))).toBe(true);
   });
 
+  it("iOS Safari -> share step shows the iOS share icon, not its location", () => {
+    const ins = buildInstructions(detectDevice(UA.iphoneSafari));
+    const share = ins.steps[0];
+    expect(share?.icon).toBe("ios-share");
+    expect(share?.text).not.toMatch(/画面下|右上/);
+  });
+
   it("iOS Chrome -> tells user to reopen in Safari", () => {
     const ins = buildInstructions(detectDevice(UA.iphoneChrome));
     expect(ins.title).toContain("Safari");
