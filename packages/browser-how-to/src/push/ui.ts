@@ -15,6 +15,11 @@ export interface PushGuideUiOptions {
   userAgent?: string;
   zIndex?: number;
   onClose?: () => void;
+  /**
+   * pushManager.subscribe() が投げたエラー。渡すとプッシュサービス側の失敗
+   * （Brave で設定がオフのときの AbortError など）を判別し、対処手順を案内する。
+   */
+  error?: unknown;
 }
 
 export interface PushGuideHandle {
@@ -29,7 +34,8 @@ export interface PushGuideHandle {
  *  - ready          → この後の許可ダイアログで「許可」を選ぶよう案内
  *  - denied         → 設定からの再許可手順を案内
  *  - unsupported    → 非対応の案内
- * を出し分ける。
+ * を出し分ける。Brave の ready では、初期設定で無効なプッシュサービスを有効にする手順も添える。
+ * options.error に subscribe() の失敗を渡すと、プッシュサービス側の失敗なら対処手順を案内する。
  */
 export function showPushGuide(options: PushGuideUiOptions = {}): PushGuideHandle {
   const controller = options.controller ?? createPushGuide({ userAgent: options.userAgent });
@@ -41,7 +47,11 @@ export function showPushGuide(options: PushGuideUiOptions = {}): PushGuideHandle
     onClose: options.onClose,
   });
 
-  renderBody(modal, controller, status, options);
+  if (options.error !== undefined && controller.isPushServiceError(options.error)) {
+    renderPushServiceError(modal, controller, status);
+  } else {
+    renderBody(modal, controller, status, options);
+  }
   return { close: modal.close };
 }
 
@@ -50,6 +60,32 @@ function appendClose(body: HTMLElement, modal: ModalHandle): void {
   row.className = "bht-actions";
   row.append(createButton("閉じる", { variant: "ghost", onClick: modal.close }));
   body.append(row);
+}
+
+function renderPushServiceError(
+  modal: ModalHandle,
+  controller: PushController,
+  status: PushStatus,
+): void {
+  const body = modal.body;
+  body.replaceChildren();
+  if (status.isBrave) {
+    modal.setTitle("Brave の設定を変更してください");
+    body.append(
+      createParagraph(
+        "Brave は初期設定でプッシュ通知の配信サービスがオフになっています。次の手順でオンにしてください。",
+      ),
+    );
+    body.append(renderSteps(controller.getBravePushSteps()));
+  } else {
+    modal.setTitle("通知を登録できませんでした");
+    body.append(
+      createParagraph(
+        "ブラウザの通知サービスに接続できませんでした。時間をおいて再度お試しいただくか、別のブラウザで開き直してください。",
+      ),
+    );
+  }
+  appendClose(body, modal);
 }
 
 function renderBody(
@@ -129,6 +165,14 @@ function renderBody(
       body.append(
         createNote("許可は後からブラウザやスマホの設定でいつでも変更できます。"),
       );
+      if (status.isBrave) {
+        body.append(
+          createNote(
+            "Brave をお使いの場合は、先に次の設定をオンにしてください（初期設定ではオフです）。",
+          ),
+        );
+        body.append(renderSteps(controller.getBravePushSteps()));
+      }
       appendClose(body, modal);
       break;
 

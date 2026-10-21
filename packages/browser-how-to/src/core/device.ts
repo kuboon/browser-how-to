@@ -75,6 +75,17 @@ export function detectStandalone(): boolean {
   return Boolean(mql) || Boolean(iosStandalone);
 }
 
+/**
+ * Brave で開かれているか。Brave の UA は Chrome と同じなので、`navigator.brave` の有無で判定する。
+ */
+export function detectBrave(): boolean {
+  return (
+    typeof navigator !== "undefined" &&
+    typeof (navigator as Navigator & { brave?: unknown }).brave === "object" &&
+    (navigator as Navigator & { brave?: unknown }).brave !== null
+  );
+}
+
 /** 端末・ブラウザ・インアプリ状態をまとめて検出する。 */
 export function detectDevice(ua?: string): DeviceInfo {
   const userAgent = getUserAgent(ua);
