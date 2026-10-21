@@ -87,6 +87,17 @@ const push = createPushGuide().getStatus();
 - `ready`（許可を求められる） / `needs-install`（iOS 未インストール → a2hs へ） /
   `in-app-blocked` / `denied`（設定から再許可） / `unsupported`
 - iOS は「ホーム画面に追加した PWA」でのみ Web Push が使えるため、`/push/ui` は内部で `/a2hs/ui` を呼び出します
+- Brave は初期設定でプッシュサービスが無効で、`ready` でも `pushManager.subscribe()` が `AbortError` で失敗します。
+  Brave では `ready` の案内に `brave://settings/privacy` の設定手順を添えます。
+  `subscribe()` の失敗を `showPushGuide({ error })` に渡すと、設定手順を表示します
+
+  ```ts
+  try {
+    await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey });
+  } catch (error) {
+    showPushGuide({ error });
+  }
+  ```
 
 ## ライセンス
 

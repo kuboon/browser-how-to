@@ -22,6 +22,11 @@ export interface PushStatus {
   support: PushSupport;
   permission: PushPermission;
   device: DeviceInfo;
+  /**
+   * Brave で開かれているか。Brave は初期設定で Web Push（プッシュサービス）が無効で、
+   * support が "ready" でも subscribe() が AbortError で失敗することがある。
+   */
+  isBrave: boolean;
 }
 
 export interface PushController {
@@ -33,9 +38,18 @@ export interface PushController {
   ): import("../core/index.js").EscapeResult;
   /** denied 時などに表示する、端末別の再許可手順を取得する。 */
   getReenableSteps(): GuideStep[];
+  /** Brave でプッシュサービス（初期設定では無効）を有効にする手順を取得する。 */
+  getBravePushSteps(): GuideStep[];
+  /**
+   * pushManager.subscribe() が投げたエラーが、プッシュサービス側の失敗
+   * （Brave で設定がオフのときの "AbortError: Registration failed - push service error" など）か。
+   */
+  isPushServiceError(error: unknown): boolean;
 }
 
 export interface PushGuideOptions {
   /** テスト/SSR 用に User-Agent を差し替える。 */
   userAgent?: string;
+  /** テスト用に Brave 判定（既定は navigator.brave の有無）を差し替える。 */
+  isBrave?: boolean;
 }

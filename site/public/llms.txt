@@ -125,15 +125,17 @@ import { showPushGuide } from "@kuboon/browser-how-to/push/ui";
 
 type PushSupport = "ready" | "needs-install" | "in-app-blocked" | "denied" | "unsupported";
 type PushPermission = "default" | "granted" | "denied" | "unsupported";
-interface PushStatus { support: PushSupport; permission: PushPermission; device: DeviceInfo; }
+interface PushStatus { support: PushSupport; permission: PushPermission; device: DeviceInfo; isBrave: boolean; }
 
-detectPushStatus(options?: { userAgent?: string }): PushStatus; // 同期
-const p = createPushGuide(options?: { userAgent?: string });
+detectPushStatus(options?: { userAgent?: string; isBrave?: boolean }): PushStatus; // 同期
+const p = createPushGuide(options?: { userAgent?: string; isBrave?: boolean });
 p.getStatus(): PushStatus;
 p.escapeInAppBrowser(options?: EscapeOptions): EscapeResult;
 p.getReenableSteps(): GuideStep[]; // 端末別の再許可手順
+p.getBravePushSteps(): GuideStep[]; // Brave でプッシュサービスを有効にする手順
+p.isPushServiceError(error: unknown): boolean; // subscribe() の AbortError（プッシュサービス側の失敗）か
 
-showPushGuide(options?: { userAgent?; zIndex?; onClose?; controller? }): { close(): void };
+showPushGuide(options?: { userAgent?; zIndex?; onClose?; controller?; error? }): { close(): void };
 ```
 
 PushSupport の意味:
@@ -144,3 +146,13 @@ PushSupport の意味:
 - unsupported: 通知に非対応
 
 注: iOS は「ホーム画面に追加した PWA」でのみ Web Push が使える。
+
+注: Brave は初期設定でプッシュサービスが無効で、`ready` でも `pushManager.subscribe()` が `AbortError: Registration failed - push service error` で失敗する（UA は Chrome と同じ。`navigator.brave` の有無で判定し、設定の状態は事前には分からない）。`isBrave` のとき `showPushGuide()` の ready 案内に `brave://settings/privacy` の手順を添える。subscribe() の失敗は `showPushGuide({ error })` に渡すと対処手順を表示する:
+
+```ts
+try {
+  await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey });
+} catch (error) {
+  showPushGuide({ error }); // Brave + AbortError なら設定手順
+}
+```

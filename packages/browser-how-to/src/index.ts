@@ -10,6 +10,7 @@ export {
   detectBrowser,
   detectOsVersion,
   detectStandalone,
+  detectBrave,
   detectInAppBrowser,
   isStandardBrowser,
   escapeInAppBrowser,

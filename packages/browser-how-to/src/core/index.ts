@@ -7,6 +7,7 @@ export {
   detectBrowser,
   detectOsVersion,
   detectStandalone,
+  detectBrave,
   isStandardBrowser,
 } from "./device.js";
 export { detectInAppBrowser } from "./inAppBrowser.js";

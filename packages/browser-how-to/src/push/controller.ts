@@ -1,4 +1,5 @@
 import {
+  detectBrave,
   detectDevice,
   escapeInAppBrowser,
   type DeviceInfo,
@@ -65,16 +66,40 @@ function reenableSteps(device: DeviceInfo): GuideStep[] {
   ];
 }
 
+/** Brave でプッシュサービスを有効にする手順（Android でも同じ設定画面を開ける）。 */
+function bravePushSteps(): GuideStep[] {
+  return [
+    { text: "アドレスバーに brave://settings/privacy と入力して開きます。", icon: "browser" },
+    {
+      text: "「プッシュメッセージングに Google サービスを使用」（Use Google services for push messaging）をオンにします。",
+      icon: "add",
+    },
+    { text: "Brave を再起動し、もう一度このページで通知を有効にします。", icon: "menu" },
+  ];
+}
+
+function isPushServiceError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    (error as { name?: unknown }).name === "AbortError"
+  );
+}
+
 export function createPushGuide(options: PushGuideOptions = {}): PushController {
   const device = detectDevice(options.userAgent);
+  const isBrave = options.isBrave ?? detectBrave();
   return {
     getStatus: (): PushStatus => ({
       support: computeSupport(device, readPermission()),
       permission: readPermission(),
       device,
+      isBrave,
     }),
     escapeInAppBrowser: (opts?: EscapeOptions): EscapeResult => escapeInAppBrowser(device, opts),
     getReenableSteps: (): GuideStep[] => reenableSteps(device),
+    getBravePushSteps: bravePushSteps,
+    isPushServiceError,
   };
 }
 

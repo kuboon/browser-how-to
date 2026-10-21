@@ -122,7 +122,8 @@ with steps on desktop.
   `denied` → use `getReenableSteps()` for per-device re-enable instructions. The
   library does **not** request permission or subscribe; call
   `Notification.requestPermission()` / `pushManager.subscribe()` yourself once
-  `support === "ready"`.
+  `support === "ready"`. Wrap `subscribe()` in try/catch and pass the failure to
+  `showPushGuide({ error })` — see the Brave gotcha below.
 
 ## Gotchas
 
@@ -130,6 +131,20 @@ with steps on desktop.
   Threads, LINE, X, WeChat, TikTok, KakaoTalk, etc. all block a2hs/passkeys/push.
   Every feature exposes `escapeInAppBrowser()` — wire it up, don't just show a
   broken button.
+- **Brave reports `ready` but `subscribe()` fails.** Brave (UA identical to
+  Chrome) ships with its push service off, so `subscribe()` throws
+  `AbortError: Registration failed - push service error`. There is no way to
+  detect the setting beforehand. `status.isBrave` (via `navigator.brave`) makes
+  the `ready` guide show the `brave://settings/privacy` steps up front, and
+  `showPushGuide({ error })` turns that `AbortError` into the same steps:
+
+  ```ts
+  try {
+    await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey });
+  } catch (error) {
+    showPushGuide({ error });
+  }
+  ```
 - **iOS push depends on a2hs.** If you add push on iOS without the install step,
   it silently never works. Use the `push` entry (which bundles a2hs) rather than
   reimplementing the ordering.

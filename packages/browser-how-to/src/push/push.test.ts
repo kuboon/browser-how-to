@@ -31,3 +31,36 @@ describe("createPushGuide", () => {
     expect(guide.getReenableSteps().length).toBeGreaterThan(0);
   });
 });
+
+describe("Brave", () => {
+  it("reports isBrave from the override", () => {
+    expect(detectPushStatus({ userAgent: UA.androidChrome, isBrave: true }).isBrave).toBe(true);
+    expect(detectPushStatus({ userAgent: UA.androidChrome, isBrave: false }).isBrave).toBe(false);
+  });
+
+  it("detects Brave from navigator.brave", () => {
+    const original = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+    Object.defineProperty(globalThis, "navigator", {
+      value: { userAgent: UA.androidChrome, brave: { isBrave: () => Promise.resolve(true) } },
+      configurable: true,
+    });
+    try {
+      expect(detectPushStatus().isBrave).toBe(true);
+    } finally {
+      if (original) Object.defineProperty(globalThis, "navigator", original);
+    }
+  });
+
+  it("provides steps to enable the push service", () => {
+    const steps = createPushGuide({ isBrave: true }).getBravePushSteps();
+    expect(steps.some((s) => s.text.includes("brave://settings/privacy"))).toBe(true);
+  });
+
+  it("recognizes AbortError from subscribe() as a push service error", () => {
+    const guide = createPushGuide({ isBrave: true });
+    const abort = new DOMException("Registration failed - push service error", "AbortError");
+    expect(guide.isPushServiceError(abort)).toBe(true);
+    expect(guide.isPushServiceError(new DOMException("denied", "NotAllowedError"))).toBe(false);
+    expect(guide.isPushServiceError(undefined)).toBe(false);
+  });
+});
