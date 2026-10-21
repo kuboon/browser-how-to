@@ -1,6 +1,6 @@
 {
   "name": "@kuboon/browser-how-to",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "ホーム画面追加・パスキー・プッシュ通知が使えるか判定し、使えなければ標準ブラウザへ誘導、使える場合はやり方を案内するフロントエンド用ライブラリ",
   "type": "module",
   "files": ["dist"],
